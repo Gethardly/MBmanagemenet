@@ -41,7 +41,7 @@ export class AuthService {
 
       return { token };
     } catch (e) {
-      return e;
+      throw e;
     }
   }
 
@@ -71,7 +71,7 @@ export class AuthService {
 
       return { token };
     } catch (e) {
-      return e;
+      throw e;
     }
   }
 }
