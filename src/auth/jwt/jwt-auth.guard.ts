@@ -4,7 +4,7 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { User, UserDocument } from '../schemas/user.schema';
+import { User } from '../schemas/user.schema';
 import { Model } from 'mongoose';
 import { Request } from 'express';
 import { AuthGuard } from '@nestjs/passport';
@@ -13,7 +13,7 @@ import { JwtStrategy } from './jwt.strategy';
 @Injectable()
 export class JwtAuthGuard extends AuthGuard('jwt') {
   constructor(
-    @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+    @InjectModel(User.name) private readonly userModel: Model<User>,
     private jwtStrategy: JwtStrategy,
   ) {
     super();
