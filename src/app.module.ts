@@ -8,6 +8,10 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { User, UserSchema } from './auth/schemas/user.schema';
 import { JwtService } from '@nestjs/jwt';
+import { NotesModule } from './notes/notes.module';
+import { NotesController } from './notes/notes.controller';
+import { NotesService } from './notes/notes.service';
+import { Notes, NotesSchema } from './notes/schema/notes.schema';
 
 @Module({
   imports: [
@@ -21,10 +25,14 @@ import { JwtService } from '@nestjs/jwt';
         uri: config.get<string>('DB_CONNECTION'),
       }),
     }),
-    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    MongooseModule.forFeature([
+      { name: User.name, schema: UserSchema },
+      { name: Notes.name, schema: NotesSchema },
+    ]),
     AuthModule,
+    NotesModule,
   ],
-  controllers: [AppController, AuthController],
-  providers: [AppService, AuthService, JwtService],
+  controllers: [AppController, AuthController, NotesController],
+  providers: [AppService, AuthService, JwtService, NotesService],
 })
 export class AppModule {}
