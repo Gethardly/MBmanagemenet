@@ -33,7 +33,7 @@ export class JwtAuthGuard extends AuthGuard('jwt') {
       return false;
     }
 
-    request['user'] = user;
+    Request['user'] = user;
     return true;
   }
 
