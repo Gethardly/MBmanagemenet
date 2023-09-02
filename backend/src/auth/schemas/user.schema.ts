@@ -7,7 +7,7 @@ import { Document } from 'mongoose';
 export class User extends Document {
   @Prop({
     type: String,
-    minlength: 6,
+    minlength: 5,
     maxlength: 255,
     required: [true, 'displayName field required'],
   })
@@ -21,7 +21,7 @@ export class User extends Document {
 
   @Prop({
     required: [true, 'password field required'],
-    minlength: 6,
+    minlength: 5,
     maxlength: 1024,
   })
   password: string;
