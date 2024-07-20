@@ -12,6 +12,8 @@ import { NotesModule } from './notes/notes.module';
 import { NotesController } from './notes/notes.controller';
 import { NotesService } from './notes/notes.service';
 import { Notes, NotesSchema } from './notes/schema/notes.schema';
+import { OperationRequestsModule } from './operation-requests/operation-requests.module';
+import { OperationRequestsController } from './operation-requests/operation-requests.controller';
 
 @Module({
   imports: [
@@ -31,6 +33,7 @@ import { Notes, NotesSchema } from './notes/schema/notes.schema';
     ]),
     AuthModule,
     NotesModule,
+    OperationRequestsModule,
   ],
   controllers: [AppController, AuthController, NotesController],
   providers: [AppService, AuthService, JwtService, NotesService],
