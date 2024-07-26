@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthController } from './auth/auth.controller';
@@ -13,7 +13,10 @@ import { NotesController } from './notes/notes.controller';
 import { NotesService } from './notes/notes.service';
 import { Notes, NotesSchema } from './notes/schema/notes.schema';
 import { OperationRequestsModule } from './operation-requests/operation-requests.module';
-import { OperationRequestsController } from './operation-requests/operation-requests.controller';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
+import { StaticFilesController } from './static-files/static-files.controller';
+import { MethodFilterMiddleware } from './middlewares/MethodFilterMiddleware';
 
 @Module({
   imports: [
@@ -31,11 +34,20 @@ import { OperationRequestsController } from './operation-requests/operation-requ
       { name: User.name, schema: UserSchema },
       { name: Notes.name, schema: NotesSchema },
     ]),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', '..', 'public'),
+    }),
     AuthModule,
     NotesModule,
     OperationRequestsModule,
   ],
-  controllers: [AppController, AuthController, NotesController],
+  controllers: [AppController, AuthController, NotesController, StaticFilesController],
   providers: [AppService, AuthService, JwtService, NotesService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(MethodFilterMiddleware)
+      .forRoutes('*');
+  }
+}

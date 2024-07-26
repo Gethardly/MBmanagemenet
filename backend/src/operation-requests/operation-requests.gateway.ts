@@ -9,6 +9,7 @@ import {
 import { Logger, UnauthorizedException } from '@nestjs/common';
 import { Socket, Server } from 'socket.io';
 import * as jwt from 'jsonwebtoken';
+import { RechargeRequestDto } from './dto/rechargeRequestDto';
 
 @WebSocketGateway()
 export class OperationRequestsGateway
@@ -43,8 +44,8 @@ export class OperationRequestsGateway
     this.server.emit('message', payload);
   }
 
-  public sendToAll(payload: { sender: string; message: string }): void {
-    this.logger.log(`Sending message to all clients: ${payload.message} from ${payload.sender}`);
+  public sendToAll(payload: RechargeRequestDto): void {
+    this.logger.log(`Sending message to all clients`);
     this.server.emit('message', payload);
   }
 }
