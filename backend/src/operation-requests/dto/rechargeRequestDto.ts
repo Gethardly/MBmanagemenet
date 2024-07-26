@@ -1,4 +1,4 @@
-import { IsDateString, IsNotEmpty, IsNumber, IsString, MaxLength, MinLength } from 'class-validator';
+import { IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
 
 export class RechargeRequestDto {
   @IsNotEmpty()

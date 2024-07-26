@@ -15,7 +15,6 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { StaticFilesController } from './static-files/static-files.controller';
 import { MethodFilterMiddleware } from './middlewares/MethodFilterMiddleware';
-import { PassportModule } from '@nestjs/passport';
 
 @Module({
   imports: [
