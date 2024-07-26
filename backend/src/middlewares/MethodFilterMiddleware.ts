@@ -4,7 +4,7 @@ import { Request, Response, NextFunction } from 'express';
 @Injectable()
 export class MethodFilterMiddleware implements NestMiddleware {
   private readonly whitelist = [
-    { domain: 'http://localhost:8000', methods: ['GET','POST'] },
+    { domain: 'http://localhost:3000', methods: ['GET','POST', 'PUT', 'DELETE'] },
     { domain: 'http://example.com', methods: ['GET', 'HEAD', 'PUT'] },
   ];
 

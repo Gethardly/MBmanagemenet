@@ -1,14 +1,14 @@
+import { JwtStrategy } from '../auth/jwt/jwt.strategy';
 import {
-  SubscribeMessage,
-  WebSocketGateway,
-  WebSocketServer,
-  OnGatewayInit,
   OnGatewayConnection,
   OnGatewayDisconnect,
+  OnGatewayInit,
+  SubscribeMessage,
+  WebSocketGateway,
+  WebSocketServer
 } from '@nestjs/websockets';
-import { Logger, UnauthorizedException } from '@nestjs/common';
-import { Socket, Server } from 'socket.io';
-import * as jwt from 'jsonwebtoken';
+import { Server, Socket } from 'socket.io';
+import { Logger } from '@nestjs/common';
 import { RechargeRequestDto } from './dto/rechargeRequestDto';
 
 @WebSocketGateway()
@@ -18,15 +18,26 @@ export class OperationRequestsGateway
   @WebSocketServer() server: Server;
   private logger: Logger = new Logger('OperationRequestsGateway');
 
+  constructor(
+    private readonly jwtStrategy: JwtStrategy,
+  ) {}
+
   afterInit(server: Server) {
     this.logger.log('Initialized');
   }
 
-  handleConnection(client: Socket) {
-    const token = client.handshake.auth.token;
+  async handleConnection(client: Socket) {
+    const token = client.handshake.headers.auth as string;
+
     try {
-      //const payload = jwt.verify(token, 'your-secret-key');
-      this.logger.log(`Client connected: ${client.id}`);
+      const payload = await this.jwtStrategy.validate(token);
+      const { _id } = payload;
+      if (!_id) {
+        this.logger.error(`Invalid token`);
+        client.disconnect();
+      } else {
+        this.logger.log(`Client connected: ${client.id}`);
+      }
     } catch (err) {
       this.logger.error(`Client connection error: ${err.message}`);
       client.disconnect();
@@ -39,7 +50,6 @@ export class OperationRequestsGateway
 
   @SubscribeMessage('message')
   handleMessage(client: Socket, payload: { sender: string; message: string }): void {
-    //this.logger.log(`Message received: ${payload.message} from ${payload.sender}`);
     this.logger.log('message', payload);
     this.server.emit('message', payload);
   }

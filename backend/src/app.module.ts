@@ -1,6 +1,4 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
 import { AuthController } from './auth/auth.controller';
 import { AuthService } from './auth/auth.service';
 import { AuthModule } from './auth/auth.module';
@@ -17,6 +15,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { StaticFilesController } from './static-files/static-files.controller';
 import { MethodFilterMiddleware } from './middlewares/MethodFilterMiddleware';
+import { PassportModule } from '@nestjs/passport';
 
 @Module({
   imports: [
@@ -41,8 +40,8 @@ import { MethodFilterMiddleware } from './middlewares/MethodFilterMiddleware';
     NotesModule,
     OperationRequestsModule,
   ],
-  controllers: [AppController, AuthController, NotesController, StaticFilesController],
-  providers: [AppService, AuthService, JwtService, NotesService],
+  controllers: [AuthController, NotesController, StaticFilesController],
+  providers: [AuthService, JwtService, NotesService,],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

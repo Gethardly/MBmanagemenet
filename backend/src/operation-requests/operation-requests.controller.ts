@@ -5,25 +5,25 @@ import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { Express } from 'express';
 import { RechargeRequestDto } from './dto/rechargeRequestDto';
-
-interface Operation {
-  paid_receipt: string,
-
-}
+import { OperationRequestsService } from './operation-requests.service';
 
 @Controller('operation-requests')
 export class OperationRequestsController {
-  constructor(private readonly operationRequestsGateway: OperationRequestsGateway) {}
+  constructor(
+    private readonly operationRequestsGateway: OperationRequestsGateway,
+    private operationRequestService: OperationRequestsService,
+  ) {}
 
   @Post('payment')
   @UseInterceptors(
     FileInterceptor('paid_receipt', {
       storage: diskStorage({
-        destination: './public/receipts',
+        destination: './public/recharge-receipts',
         filename: (req, file, callback) => {
           const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
           const ext = extname(file.originalname);
-          callback(null, `${req.body.payment_date}-${uniqueSuffix}${ext}`);
+          const fileName = `${req.body.payment_date}-${uniqueSuffix}${ext}`;
+          callback(null, fileName);
         },
       }),
       fileFilter: (req, file, callback) => {
@@ -38,15 +38,22 @@ export class OperationRequestsController {
   )
   async uploadFile(
     @UploadedFile() file: Express.Multer.File,
-    @Body() reqData: RechargeRequestDto,
+    @Body() rechargeData: RechargeRequestDto,
   ) {
-    console.log('File:', file);
-    console.log('Data:', reqData);
-    this.operationRequestsGateway.sendToAll(reqData);
+    try {
+      const dataToSave = {
+        ...rechargeData,
+        filename: file.filename,
+      };
+      const savedData = await this.operationRequestService.saveInDB(dataToSave);
+      this.operationRequestsGateway.sendToAll(dataToSave);
 
-    return {
-      message: 'File and data uploaded successfully',
-      filePath: file.path,
-    };
+      return {
+        savedData
+      };
+    } catch (err) {
+      return err.message;
+    }
+
   }
 }
