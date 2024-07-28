@@ -6,8 +6,7 @@ import CreateUser from './features/users/CreateUser';
 import Protected from './components/Protected';
 import { useAppSelector } from './app/hooks';
 import { selectUser } from './features/users/usersSlice';
-import Notes from './features/notes/Notes';
-import CreateNote from './features/notes/CreateNote';
+import PaymentRequests from './features/operations/payment-requests/PaymentRequests';
 
 function App() {
   const user = useAppSelector(selectUser);
@@ -19,9 +18,9 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<CreateUser />} />
         <Route element={<Protected user={user} />}>
-          <Route path="/" element={<Notes />} />
-          <Route path="/create-note" element={<CreateNote />} />
-          <Route path="/edit-note/:id" element={<CreateNote />} />
+          <Route path="/" element={<PaymentRequests />} />
+         {/* <Route path="/create-note" element={<CreateNote />} />
+          <Route path="/edit-note/:id" element={<CreateNote />} />*/}
         </Route>
       </Routes>
     </Layout>

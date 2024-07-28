@@ -1,18 +1,30 @@
-import { BadRequestException, Body, Controller, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  Post,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+  Query, Put
+} from '@nestjs/common';
 import { OperationRequestsGateway } from './operation-requests.gateway';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { Express } from 'express';
-import { RechargeRequestDto } from './dto/rechargeRequestDto';
+import { GetRechargeDto, RechargeRequestsDto } from './dto/operationRequersDto';
 import { OperationRequestsService } from './operation-requests.service';
+import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
 
 @Controller('operation-requests')
 export class OperationRequestsController {
   constructor(
     private readonly operationRequestsGateway: OperationRequestsGateway,
     private operationRequestService: OperationRequestsService,
-  ) {}
+  ) {
+  }
 
   @Post('payment')
   @UseInterceptors(
@@ -22,7 +34,7 @@ export class OperationRequestsController {
         filename: (req, file, callback) => {
           const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
           const ext = extname(file.originalname);
-          const fileName = `${req.body.payment_date}-${uniqueSuffix}${ext}`;
+          const fileName = `${req.body.payment_date.replace(/[:.]/g, '-')}-${uniqueSuffix}${ext}`;
           callback(null, fileName);
         },
       }),
@@ -38,7 +50,7 @@ export class OperationRequestsController {
   )
   async uploadFile(
     @UploadedFile() file: Express.Multer.File,
-    @Body() rechargeData: RechargeRequestDto,
+    @Body() rechargeData: RechargeRequestsDto,
   ) {
     try {
       const dataToSave = {
@@ -46,7 +58,7 @@ export class OperationRequestsController {
         filename: file.filename,
       };
       const savedData = await this.operationRequestService.saveInDB(dataToSave);
-      this.operationRequestsGateway.sendToAll(dataToSave);
+      this.operationRequestsGateway.sendToAll(savedData);
 
       return {
         savedData
@@ -54,6 +66,17 @@ export class OperationRequestsController {
     } catch (err) {
       return err.message;
     }
+  }
 
+  @Get('payments')
+  @UseGuards(JwtAuthGuard)
+  getPayments(@Query() filterData: GetRechargeDto) {
+    return this.operationRequestService.getAll(filterData);
+  }
+
+  @Put('payment')
+  @UseGuards(JwtAuthGuard)
+  changePayment(newPayment) {
+    return
   }
 }

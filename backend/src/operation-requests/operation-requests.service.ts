@@ -1,14 +1,14 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import mongoose, { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { RechargeRequestDto } from './dto/rechargeRequestDto';
+import { ChangeRechargeDto, GetRechargeDto, RechargeRequestsDto } from './dto/operationRequersDto';
 import { Recharge } from './schema/recharge.schema';
 
 @Injectable()
 export class OperationRequestsService {
   constructor(@InjectModel(Recharge.name) private rechargeModel: Model<Recharge>) {}
 
-  async saveInDB(rechargeDto: RechargeRequestDto) {
+  async saveInDB(rechargeDto: RechargeRequestsDto) {
     try {
       return await this.rechargeModel.create(rechargeDto);
     } catch (e) {
@@ -16,9 +16,12 @@ export class OperationRequestsService {
     }
   }
 
-  async getAll() {
+  async getAll(filters: GetRechargeDto) {
     try {
-      return await this.rechargeModel.find();
+      return await this.rechargeModel.find({createdAt: {
+          $gte: filters.start_date,
+          $lt: filters.end_date,
+        },});
     } catch (e) {
       throw e;
     }
@@ -39,12 +42,12 @@ export class OperationRequestsService {
     }
   }
 
-  async changeOne(id: string, newNote: RechargeRequestDto) {
+  async changeOne(id: string, newRecharge: ChangeRechargeDto) {
     try {
       if (!mongoose.isValidObjectId(id)) {
         throw new UnprocessableEntityException('Invalid note id');
       }
-      const editedNote = await this.rechargeModel.updateOne({ _id: id }, newNote);
+      const editedNote = await this.rechargeModel.updateOne({ _id: id }, newRecharge);
       if (editedNote.modifiedCount === 0 || editedNote.matchedCount === 0) {
         throw new UnprocessableEntityException('Invalid note id');
       }

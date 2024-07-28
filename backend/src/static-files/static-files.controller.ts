@@ -6,7 +6,7 @@ import { join } from 'path';
 @Controller('recharge-receipts')
 export class StaticFilesController {
   @Get(':filename')
-  @UseGuards(JwtAuthGuard)
+  //@UseGuards(JwtAuthGuard)
   getFile(@Param('filename') filename: string, @Res() res: Response) {
     const filePath = join(__dirname, '..', '..', '../public/recharge-receipts', filename);
     res.sendFile(filePath);

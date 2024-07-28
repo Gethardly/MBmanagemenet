@@ -1,4 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document } from 'mongoose';
+import { ObjectId } from 'mongodb';
 
 @Schema({ timestamps: true })
 export class Recharge {
@@ -11,10 +13,18 @@ export class Recharge {
   sender_name: string;
 
   @Prop({
-    type: String,
-    minlength: 1,
-    maxlength: 50,
+    type: Date,
     required: [true, 'Field title is required.'],
+    validate: {
+      validator: function (value: Date) {
+        return (
+          value.getHours() !== 0 ||
+          value.getMinutes() !== 0 ||
+          value.getSeconds() !== 0
+        );
+      },
+      message: 'Invalid datetime',
+    },
   })
   payment_date: string;
 
@@ -32,6 +42,13 @@ export class Recharge {
     required: [true, 'Field title is required.'],
   })
   filename: string;
+
+  @Prop({
+    type: Boolean || null,
+    default: null,
+  })
+  status: boolean
 }
 
 export const RechargeSchema = SchemaFactory.createForClass(Recharge);
+export type RechargeDocument = Recharge & Document<ObjectId>;

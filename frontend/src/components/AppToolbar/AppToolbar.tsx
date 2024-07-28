@@ -22,7 +22,7 @@ const AppToolbar = () => {
               style={{ color: "#fff", textDecoration: "none" }}
               to={user ? "/" : "#"}
             >
-              Notes
+              MBmanagement
             </Link>
           </Typography>
           <Grid item>

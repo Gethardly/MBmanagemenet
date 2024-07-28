@@ -9,9 +9,16 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { Logger } from '@nestjs/common';
-import { RechargeRequestDto } from './dto/rechargeRequestDto';
+import { RechargeDocument } from './schema/recharge.schema';
+import { OperationRequestsService } from './operation-requests.service';
 
-@WebSocketGateway()
+@WebSocketGateway({
+  cors: {
+    origin: ['http://localhost:3000', 'http://example.com'],
+    methods: ['GET', 'POST'],
+    credentials: true,
+  },
+})
 export class OperationRequestsGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
@@ -20,6 +27,7 @@ export class OperationRequestsGateway
 
   constructor(
     private readonly jwtStrategy: JwtStrategy,
+    private operationRequestsService: OperationRequestsService,
   ) {}
 
   afterInit(server: Server) {
@@ -48,14 +56,14 @@ export class OperationRequestsGateway
     this.logger.log(`Client disconnected: ${client.id}`);
   }
 
-  @SubscribeMessage('message')
-  handleMessage(client: Socket, payload: { sender: string; message: string }): void {
-    this.logger.log('message', payload);
-    this.server.emit('message', payload);
+  @SubscribeMessage('change-payment-status')
+  handleMessage(client: Socket, payload: { id: string; status: boolean }) {
+    this.server.emit('changed-payment-status', payload)
+    return this.operationRequestsService.changeOne(payload.id, payload)
   }
 
-  public sendToAll(payload: RechargeRequestDto): void {
+  public sendToAll(payload: RechargeDocument): void {
     this.logger.log(`Sending message to all clients`);
-    this.server.emit('message', payload);
+    this.server.emit('payment', payload);
   }
 }
