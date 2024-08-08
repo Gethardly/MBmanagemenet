@@ -146,13 +146,13 @@ const Login = () => {
           </Button>
         </Box>
       </Box>
-      <Grid container justifyContent="flex-end">
+      {/*<Grid container justifyContent="flex-end">
         <Grid item>
           <Link component={RouterLink} to="/register" variant="body2">
             Зарегистрироваться
           </Link>
         </Grid>
-      </Grid>
+      </Grid>*/}
     </Container>
   );
 };

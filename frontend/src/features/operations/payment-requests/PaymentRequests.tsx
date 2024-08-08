@@ -1,4 +1,4 @@
-import { Button, Card, CardActions, CardContent, CardMedia, Grid, Paper, Typography } from '@mui/material';
+import { Box, Button, Grid, Modal, Paper, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { useAppSelector } from '../../../app/hooks';
@@ -11,27 +11,38 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import TableBody from '@mui/material/TableBody';
+import CloseIcon from '@mui/icons-material/Close';
+import { Payment } from '../../../types';
 
-const SOCKET_SERVER_URL = 'ws://localhost:8000'; // Замените на URL вашего сервера
+const SOCKET_SERVER_URL = 'ws://localhost:8000';
+const modalStyle = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  bgcolor: 'background.paper',
+  border: '2px solid #ccc',
+  borderRadius: '10px',
+  boxShadow: 24,
+  pt: 2,
+  px: 4,
+  pb: 2,
+};
 
-interface Payment {
-  _id: string;
-  sender_name: string;
-  payment_date: string;
-  amount: string;
-  status: boolean | null;
-  filename: string;
-}
-
-const paymentStatuses = {
-  'null': 'Создан',
-  'true': 'Принят',
-  'false': 'Отклонен'
+interface PaymentInfo {
+  paymentId: string,
+  paymentStatus: boolean | null,
 }
 
 const PaymentRequests = () => {
   const token = useAppSelector(selectUser)?.token;
   const [payments, setNewPayments] = useState<Payment[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [paymentInfo, setPaymentInfo] = useState<PaymentInfo>({
+    paymentId: '',
+    paymentStatus: null,
+  });
   const socketRef = React.useRef<Socket | null>(null);
 
   useEffect(() => {
@@ -42,7 +53,7 @@ const PaymentRequests = () => {
     });
 
     socketRef.current.on('payment', (payment: Payment) => {
-      setNewPayments((prevPayments) => [...prevPayments, payment]);
+      setNewPayments((prevPayments) => [payment, ...prevPayments]);
     });
 
     socketRef.current.on('changed-payment-status', (newPayment) => {
@@ -63,10 +74,13 @@ const PaymentRequests = () => {
   useEffect(() => {
     const fetchTodayPayments = async () => {
       try {
-        const startOfToday = dayjs().startOf('day').toDate();
+        const startOfTodayMinusFiveDays = dayjs().startOf('day').add(-20, 'days').toDate();
         const endOfToday = dayjs().endOf('day').toDate();
         const response = await axiosApi.get('/operation-requests/payments', {
-          params: {start_date: startOfToday, end_date: endOfToday},
+          params: {
+            start_date: startOfTodayMinusFiveDays,
+            end_date: endOfToday,
+          },
         });
         setNewPayments((prevPayments) => [...prevPayments].concat(response.data));
       } catch (error) {
@@ -77,11 +91,24 @@ const PaymentRequests = () => {
     fetchTodayPayments();
   }, []);
 
-  const changePaymentRequestStatus = (id: string, status: boolean) => {
+  const changePaymentRequestStatus = (id: string, status: boolean | null) => {
     if (socketRef) {
       socketRef.current?.emit('change-payment-status', {id, status});
     }
+    setIsModalOpen(false);
   };
+
+  const openModal = (id: string, status: boolean) => {
+    setPaymentInfo({
+      paymentId: id,
+      paymentStatus: status,
+    });
+    setIsModalOpen(true);
+  }
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  }
 
   return (
     <Grid>
@@ -93,54 +120,52 @@ const PaymentRequests = () => {
               <TableCell>ФИО</TableCell>
               <TableCell>Сумма</TableCell>
               <TableCell>Чек</TableCell>
+              <TableCell>Статус</TableCell>
               <TableCell>Действие</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {payments.map(payment => (
-              <TableRow>
+              <TableRow key={payment._id}>
                 <TableCell>{dayjs(payment.payment_date).add(18, 'hour').format('DD.MM.YYYY HH:mm:ss')}</TableCell>
                 <TableCell>{payment.sender_name}</TableCell>
                 <TableCell>{payment.amount}</TableCell>
                 <TableCell>
-                  <a href={`http://localhost:8000/recharge-receipts/${payment.filename}`} target='_blank'>
+                  <a href={`http://localhost:8000/recharge-receipts/${payment.filename}`} target="_blank">
                     Посмотреть чек
                   </a>
                 </TableCell>
                 <TableCell>
-                  <Button color="success">Принять</Button>
-                  <Button color="error">Отклонить</Button>
+                  {payment.status === null && 'Создан'}
+                  {payment.status === true && 'Принят'}
+                  {payment.status === false && 'Отклонен'}
+                </TableCell>
+                <TableCell>
+                  {payment.status === null && <>
+                      <Button color="success" onClick={() => openModal(payment._id, true)}>Принять</Button>
+                      <Button color="error" onClick={() => openModal(payment._id, false)}>Отклонить</Button>
+                  </>}
                 </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </TableContainer>
-      {payments.reverse().map(payment => (
-        <Card variant="outlined" sx={{
-          p: 2,
-          mb: 2,
-          bgcolor: payment.status === null ? 'primary.light' : payment.status === true ? 'success.light' : 'error.light'
-        }} key={payment._id}>
-          <CardContent>
-            <Typography sx={{fontSize: 14}} color="text.secondary" gutterBottom>
-              {dayjs(payment.payment_date).add(18, 'hour').format('DD.MM.YYYY HH:mm:ss')}
-            </Typography>
-
-            {payment.sender_name} {payment.amount} сом
-            {payment.status === null && 'Создан'}
-            {payment.status === true && 'Принят'}
-            {payment.status === false && 'Отклонен'}
-            <a href={`http://localhost:8000/recharge-receipts/${payment.filename}`}>Посмотреть скриншот</a>
-          </CardContent>
-          <CardActions>
-            <Button variant="contained" color="success"
-                    onClick={() => changePaymentRequestStatus(payment._id, true)}>Принять</Button>
-            <Button variant="contained" color="error"
-                    onClick={() => changePaymentRequestStatus(payment._id, false)}>Отклонить</Button>
-          </CardActions>
-        </Card>
-      ))}
+      <Modal open={isModalOpen} onClose={handleCloseModal}>
+        <Box sx={modalStyle}>
+          <Button sx={{ml: '88%', color: '#000'}} onClick={handleCloseModal}>
+            <CloseIcon/>
+          </Button>
+          <Typography>
+            Вы уверены что хотите выполнить это действие?
+          </Typography>
+          <Box sx={{display: 'flex', justifyContent: 'flex-end', mt: '20px'}}>
+            <Button color="success"
+                    onClick={() => changePaymentRequestStatus(paymentInfo.paymentId, paymentInfo.paymentStatus)}>Подтвердить</Button>
+            <Button color="error" onClick={handleCloseModal}>Отменить</Button>
+          </Box>
+        </Box>
+      </Modal>
     </Grid>
   );
 };

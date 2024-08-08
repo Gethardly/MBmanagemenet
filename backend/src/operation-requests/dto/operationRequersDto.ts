@@ -21,6 +21,7 @@ export class GetRechargeDto {
   start_date: string;
   @IsString()
   end_date: string;
+  status: string;
 /*  @IsString()
   status: boolean;
   @IsString()

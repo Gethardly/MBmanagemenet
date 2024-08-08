@@ -18,10 +18,18 @@ export class OperationRequestsService {
 
   async getAll(filters: GetRechargeDto) {
     try {
-      return await this.rechargeModel.find({createdAt: {
+      const query: any = {
+        createdAt: {
           $gte: filters.start_date,
           $lt: filters.end_date,
-        },});
+        },
+      };
+
+      if (filters.status !== undefined) {
+        query.status = filters.status === "null" ? null : filters.status;
+      }
+
+      return await this.rechargeModel.find(query).sort({ createdAt: -1 });
     } catch (e) {
       throw e;
     }

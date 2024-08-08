@@ -51,3 +51,12 @@ export interface ErrorResponse {
   message: string | string[];
   error: string;
 }
+
+export interface Payment {
+  _id: string;
+  sender_name: string;
+  payment_date: string;
+  amount: string;
+  status: boolean | null;
+  filename: string;
+}

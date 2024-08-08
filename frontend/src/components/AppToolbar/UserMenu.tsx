@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { User, UserMutation } from '../../types';
 import { Button, Divider, Menu, MenuItem, Typography } from '@mui/material';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
+import HistoryIcon from '@mui/icons-material/History';
 import { getEditingUser, updateUser } from '../../features/users/usersThunks';
 import ModalBody from '../ModalBody';
 import UserForm from '../../features/users/components/UserForm';
@@ -77,6 +78,12 @@ const UserMenu: React.FC<Props> = ({ user }) => {
         <MenuItem onClick={openDialog}>
           <AccountBoxIcon sx={{ mr: 1 }} />
           Редактировать профиль
+        </MenuItem>
+        <MenuItem>
+          <HistoryIcon sx={{ mr: 1 }}/>
+          <Link to="/operations-history" style={{textDecoration: 'none', color: '#000', fontSize: '16px'}}>
+            История операций
+          </Link>
         </MenuItem>
         <Divider key="user-divider" />
         <MenuItem
