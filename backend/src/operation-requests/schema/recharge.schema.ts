@@ -48,6 +48,12 @@ export class Recharge {
     default: null,
   })
   status: boolean
+
+  @Prop({
+    type: String,
+    default: 'payment'
+  })
+  type: string
 }
 
 export const RechargeSchema = SchemaFactory.createForClass(Recharge);

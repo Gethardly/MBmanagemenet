@@ -1,11 +1,11 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import mongoose, { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { ChangeRechargeDto, GetRechargeDto, RechargeRequestsDto } from './dto/rechargeDto';
-import { Recharge } from './schema/recharge.schema';
+import { ChangeRechargeDto, GetRechargeDto, RechargeRequestsDto } from '../dto/rechargeDto';
+import { Recharge } from '../schema/recharge.schema';
 
 @Injectable()
-export class OperationRequestsService {
+export class RechargeService {
   constructor(@InjectModel(Recharge.name) private rechargeModel: Model<Recharge>) {}
 
   async saveInDB(rechargeDto: RechargeRequestsDto) {

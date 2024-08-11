@@ -12,7 +12,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PassportModule, PassportStrategy } from '@nestjs/passport';
 import { AuthModule } from '../auth/auth.module';
 import { Recharge, RechargeSchema } from './schema/recharge.schema';
-import { OperationRequestsService } from './operation-requests.service';
+import { RechargeService } from './services/recharge.service';
+import { WithdrawService } from './services/withdraw.service';
+import { Withdraw, WithdrawSchema } from './schema/withdraw.schema';
 
 @Module({
   imports: [
@@ -22,9 +24,13 @@ import { OperationRequestsService } from './operation-requests.service';
         name: Recharge.name,
         schema: RechargeSchema,
       },
+      {
+        name: Withdraw.name,
+        schema: WithdrawSchema,
+      }
     ]),
   ],
-  providers: [OperationRequestsGateway, OperationRequestsService],
+  providers: [OperationRequestsGateway, RechargeService, WithdrawService],
   controllers: [OperationRequestsController],
 })
 export class OperationRequestsModule {}

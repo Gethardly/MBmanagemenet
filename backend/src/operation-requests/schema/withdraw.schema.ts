@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { ObjectId } from 'mongodb';
 
-@Schema({ timestamps: true })
+@Schema({timestamps: true})
 export class Withdraw {
   @Prop({
     type: String,
@@ -48,6 +48,13 @@ export class Withdraw {
     default: null,
   })
   status: boolean
+
+  @Prop({
+      type: String,
+      default: 'withdraw'
+    }
+  )
+  type: string;
 }
 
 export const WithdrawSchema = SchemaFactory.createForClass(Withdraw);

@@ -10,7 +10,9 @@ import {
 import { Server, Socket } from 'socket.io';
 import { Logger } from '@nestjs/common';
 import { RechargeDocument } from './schema/recharge.schema';
-import { OperationRequestsService } from './operation-requests.service';
+import { RechargeService } from './services/recharge.service';
+import { WithdrawDocument } from './schema/withdraw.schema';
+import { WithdrawService } from './services/withdraw.service';
 
 @WebSocketGateway({
   cors: {
@@ -20,15 +22,16 @@ import { OperationRequestsService } from './operation-requests.service';
   },
 })
 export class OperationRequestsGateway
-  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
-{
+  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Server;
   private logger: Logger = new Logger('OperationRequestsGateway');
 
   constructor(
     private readonly jwtStrategy: JwtStrategy,
-    private operationRequestsService: OperationRequestsService,
-  ) {}
+    private rechargeService: RechargeService,
+    private withdrawService: WithdrawService,
+  ) {
+  }
 
   afterInit(server: Server) {
     this.logger.log('Initialized');
@@ -39,7 +42,7 @@ export class OperationRequestsGateway
 
     try {
       const payload = await this.jwtStrategy.validate(token);
-      const { _id } = payload;
+      const {_id} = payload;
       if (!_id) {
         this.logger.error(`Invalid token`);
         client.disconnect();
@@ -59,10 +62,16 @@ export class OperationRequestsGateway
   @SubscribeMessage('change-payment-status')
   handleMessage(client: Socket, payload: { id: string; status: boolean }) {
     this.server.emit('changed-payment-status', payload)
-    return this.operationRequestsService.changeOne(payload.id, payload)
+    return this.rechargeService.changeOne(payload.id, payload)
   }
 
-  public sendToAll(payload: RechargeDocument): void {
+  @SubscribeMessage('chnage-withdraw-status')
+  handleWithdrawMessage(client: Socket, payload: { id: string, status: boolean }) {
+    this.server.emit('changed-withdraw-status', payload);
+    return this.withdrawService.changeOne(payload.id, payload);
+  }
+
+  public sendToAll(payload: RechargeDocument | WithdrawDocument): void {
     this.logger.log(`Sending message to all clients`);
     this.server.emit('payment', payload);
   }

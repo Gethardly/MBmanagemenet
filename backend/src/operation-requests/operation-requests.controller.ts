@@ -15,14 +15,17 @@ import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { Express } from 'express';
 import { GetRechargeDto, RechargeRequestsDto } from './dto/rechargeDto';
-import { OperationRequestsService } from './operation-requests.service';
+import { RechargeService } from './services/recharge.service';
 import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
+import { WithdrawDto } from './dto/withdrawDto';
+import { WithdrawService } from './services/withdraw.service';
 
 @Controller('operation-requests')
 export class OperationRequestsController {
   constructor(
     private readonly operationRequestsGateway: OperationRequestsGateway,
-    private operationRequestService: OperationRequestsService,
+    private  rechargeService:RechargeService,
+    private withdrawService: WithdrawService,
   ) {
   }
 
@@ -57,7 +60,7 @@ export class OperationRequestsController {
         ...rechargeData,
         filename: file.filename,
       };
-      const savedData = await this.operationRequestService.saveInDB(dataToSave);
+      const savedData = await this.rechargeService.saveInDB(dataToSave);
       this.operationRequestsGateway.sendToAll(savedData);
 
       return {
@@ -69,12 +72,25 @@ export class OperationRequestsController {
   }
 
   @Post('withdraw')
+  async withdraw(@Body() withdrawData: WithdrawDto) {
+    const savedData = await this.withdrawService.saveInDB(withdrawData);
 
+    this.operationRequestsGateway.sendToAll(savedData);
+    return {
+      savedData
+    };
+  }
 
   @Get('payments')
   @UseGuards(JwtAuthGuard)
   getPayments(@Query() filterData: GetRechargeDto) {
-    return this.operationRequestService.getAll(filterData);
+    return this.rechargeService.getAll(filterData);
+  }
+
+  @Get('withdrawals')
+  @UseGuards(JwtAuthGuard)
+  getWithdrawals(@Query() filterData: GetRechargeDto) {
+    return this.withdrawService.getAll(filterData);
   }
 
   @Put('payment')
