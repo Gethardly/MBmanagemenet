@@ -14,7 +14,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
 import { Express } from 'express';
-import { GetRechargeDto, RechargeRequestsDto } from './dto/operationRequersDto';
+import { GetRechargeDto, RechargeRequestsDto } from './dto/rechargeDto';
 import { OperationRequestsService } from './operation-requests.service';
 import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
 
@@ -67,6 +67,9 @@ export class OperationRequestsController {
       return err.message;
     }
   }
+
+  @Post('withdraw')
+
 
   @Get('payments')
   @UseGuards(JwtAuthGuard)

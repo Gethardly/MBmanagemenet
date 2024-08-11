@@ -80,6 +80,7 @@ const PaymentRequests = () => {
           params: {
             start_date: startOfTodayMinusFiveDays,
             end_date: endOfToday,
+            status: "null",
           },
         });
         setNewPayments((prevPayments) => [...prevPayments].concat(response.data));

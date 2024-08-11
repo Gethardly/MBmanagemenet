@@ -1,7 +1,7 @@
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import mongoose, { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { ChangeRechargeDto, GetRechargeDto, RechargeRequestsDto } from './dto/operationRequersDto';
+import { ChangeRechargeDto, GetRechargeDto, RechargeRequestsDto } from './dto/rechargeDto';
 import { Recharge } from './schema/recharge.schema';
 
 @Injectable()

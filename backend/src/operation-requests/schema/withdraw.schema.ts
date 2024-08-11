@@ -3,18 +3,18 @@ import { Document } from 'mongoose';
 import { ObjectId } from 'mongodb';
 
 @Schema({ timestamps: true })
-export class Recharge {
+export class Withdraw {
   @Prop({
     type: String,
     minlength: 1,
     maxlength: 150,
-    required: [true, 'Field sender_name is required.'],
+    required: [true, 'Field recipient_name is required.'],
   })
-  sender_name: string;
+  recipient_name: string;
 
   @Prop({
     type: Date,
-    required: [true, 'Field payment_date is required.'],
+    required: [true, 'Field title is required.'],
     validate: {
       validator: function (value: Date) {
         return (
@@ -26,7 +26,7 @@ export class Recharge {
       message: 'Invalid datetime',
     },
   })
-  payment_date: string;
+  withdrawal_request_date: string;
 
   @Prop({
     type: String,
@@ -39,9 +39,9 @@ export class Recharge {
   @Prop({
     type: String,
     minlength: 1,
-    required: [true, 'Field filename is required.'],
+    required: [true, 'Field phone_number is required.'],
   })
-  filename: string;
+  phone_number: string;
 
   @Prop({
     type: Boolean || null,
@@ -50,5 +50,5 @@ export class Recharge {
   status: boolean
 }
 
-export const RechargeSchema = SchemaFactory.createForClass(Recharge);
-export type RechargeDocument = Recharge & Document<ObjectId>;
+export const WithdrawSchema = SchemaFactory.createForClass(Withdraw);
+export type WithdrawDocument = Withdraw & Document<ObjectId>;
