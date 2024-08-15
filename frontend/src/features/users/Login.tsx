@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { GlobalError, LoginMutation } from '../../types';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import {
   Alert,
   Avatar,
@@ -11,7 +11,6 @@ import {
   IconButton,
   InputAdornment,
   InputLabel,
-  Link,
   OutlinedInput,
   TextField,
   Typography,

@@ -54,7 +54,7 @@ const WithdrawRequests = () => {
         socketRef.current?.disconnect();
       }
     };
-  }, []);
+  }, [token]);
 
   useEffect(() => {
     const fetchTodayWithdraws = async () => {

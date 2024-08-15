@@ -54,7 +54,7 @@ const PaymentRequests = () => {
         socketRef.current?.disconnect();
       }
     };
-  }, []);
+  }, [token]);
 
   useEffect(() => {
     const fetchTodayPayments = async () => {
@@ -120,7 +120,7 @@ const PaymentRequests = () => {
                 <TableCell>{payment.sender_name}</TableCell>
                 <TableCell>{payment.amount}</TableCell>
                 <TableCell>
-                  <a href={`http://localhost:8000/recharge-receipts/${payment.filename}`} target="_blank" rel="noreferrer">
+                  <a href={`http://localhost:8000/recharge-receipts/${payment.filename}`} target="_blank" rel="noopener noreferrer">
                     Посмотреть чек
                   </a>
                 </TableCell>
