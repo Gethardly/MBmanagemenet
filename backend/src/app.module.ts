@@ -15,6 +15,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { StaticFilesController } from './static-files/static-files.controller';
 import { MethodFilterMiddleware } from './middlewares/MethodFilterMiddleware';
+import { MbankPhoneModule } from './mbank-phone/mbank-phone.module';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { MethodFilterMiddleware } from './middlewares/MethodFilterMiddleware';
     AuthModule,
     NotesModule,
     OperationRequestsModule,
+    MbankPhoneModule,
   ],
   controllers: [AuthController, NotesController, StaticFilesController],
   providers: [AuthService, JwtService, NotesService,],
