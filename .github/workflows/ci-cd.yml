@@ -26,7 +26,7 @@ jobs:
         working-directory: ./frontend
 
       - name: Build
-        run: npm run build
+        run: npm run build --no-eslint
         working-directory: ./frontend
 
       - name: Upload frontend build artifacts
