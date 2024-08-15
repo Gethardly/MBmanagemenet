@@ -120,7 +120,7 @@ const PaymentRequests = () => {
                 <TableCell>{payment.sender_name}</TableCell>
                 <TableCell>{payment.amount}</TableCell>
                 <TableCell>
-                  <a href={`http://localhost:8000/recharge-receipts/${payment.filename}`} target="_blank">
+                  <a href={`http://localhost:8000/recharge-receipts/${payment.filename}`} target="_blank" rel="noreferrer">
                     Посмотреть чек
                   </a>
                 </TableCell>
