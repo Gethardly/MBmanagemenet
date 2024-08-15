@@ -1,0 +1,107 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - develop
+  pull_request:
+    branches:
+      - develop
+
+jobs:
+  build-frontend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: ./frontend
+
+      - name: Build
+        run: npm run build
+        working-directory: ./frontend
+
+      - name: Upload frontend build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: frontend-build
+          path: ./frontend/build
+
+  build-backend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: ./backend
+
+      - name: Build
+        run: npm run build
+        working-directory: ./backend
+
+      - name: Upload backend build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: backend-build
+          path: ./backend/dist
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [build-frontend, build-backend]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Download frontend build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: frontend-build
+
+      - name: Download backend build artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: backend-build
+
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v0.1.4
+        with:
+          host: ${{ secrets.VPS_IP }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            # Перейдите в каталог вашего проекта
+            cd /path/to/your/project
+
+            # Обновите код
+            git pull origin main
+
+            # Обновите фронтенд
+            cd frontend
+            npm install
+            npm run build
+            # Убедитесь, что статические файлы развернуты на сервере
+
+            # Обновите бэкенд
+            cd ../backend
+            npm install
+            npm run build
+            # Перезапустите сервисы (зависит от вашей конфигурации)
+            sudo systemctl restart your-backend-service
+            sudo systemctl restart your-frontend-service
