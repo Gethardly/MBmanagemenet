@@ -1,17 +1,37 @@
-import { Controller, Get } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { MbankPhoneService } from './mbank-phone.service';
+import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
+import { MbankPhoneDto } from './dto/mbank-phoneDto';
 
 @Controller('mbank-phone')
 export class MbankPhoneController {
-  private phones = ['+996700715499', '+996777777777', '+996708552267', '+996888888888'];
-  private currentIndex = 0;
+  constructor(
+    private  mbankService: MbankPhoneService,
+  ) {
+  }
   @Get('')
   getMbankPhone() {
-    const phone = this.phones[this.currentIndex];
+    return this.mbankService.getPhones();
+  }
 
-    this.currentIndex = (this.currentIndex + 1) % this.phones.length;
-
+  @Post('')
+  @UseGuards(JwtAuthGuard)
+  async createMbankPhone(@Body() phone: MbankPhoneDto) {
+    const savedData = await this.mbankService.createPhone(phone);
     return {
-      phone
-    };
+      savedData
+    }
+  }
+
+  @Put()
+  @UseGuards(JwtAuthGuard)
+  async changeMbankPhone(@Body() newPhone: MbankPhoneDto) {
+    return await this.mbankService.changePhone(newPhone)
+  }
+
+  @Delete(':id')
+  @UseGuards(JwtAuthGuard)
+  deleteOneNote(@Param('id') id: string) {
+    return this.mbankService.deletePhone(id);
   }
 }
