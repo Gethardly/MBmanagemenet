@@ -1,32 +1,32 @@
-import { Box, Button, Grid, Modal, Paper, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
-import { io, Socket } from 'socket.io-client';
-import { useAppSelector } from '../../../app/hooks';
-import { selectUser } from '../../users/usersSlice';
-import dayjs from 'dayjs';
-import axiosApi from '../../../axios';
+import { Box, Button, Grid, Modal, Paper, Typography } from '@mui/material';
 import TableContainer from '@mui/material/TableContainer';
 import Table from '@mui/material/Table';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import TableBody from '@mui/material/TableBody';
+import dayjs from 'dayjs';
 import CloseIcon from '@mui/icons-material/Close';
-import { Payment } from '../../../types';
 import { modalStyle, SOCKET_SERVER_URL } from '../constants';
+import { useAppSelector } from '../../../app/hooks';
+import { selectUser } from '../../users/usersSlice';
+import { Withdraw } from '../../../types';
+import { io, Socket } from 'socket.io-client';
+import axiosApi from '../../../axios';
 
-interface PaymentInfo {
-  paymentId: string,
-  paymentStatus: boolean | null,
+interface WithdrawInfo {
+  withdrawId: string;
+  withdrawStatus: boolean | null;
 }
 
-const PaymentRequests = () => {
+const WithdrawRequests = () => {
   const token = useAppSelector(selectUser)?.token;
-  const [payments, setNewPayments] = useState<Payment[]>([]);
+  const [withdraws, setNewWithdraws] = useState<Withdraw[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [paymentInfo, setPaymentInfo] = useState<PaymentInfo>({
-    paymentId: '',
-    paymentStatus: null,
+  const [withdrawInfo, setWithdrawInfo] = useState<WithdrawInfo>({
+    withdrawId: '',
+    withdrawStatus: null,
   });
   const socketRef = React.useRef<Socket | null>(null);
 
@@ -37,14 +37,14 @@ const PaymentRequests = () => {
       },
     });
 
-    socketRef.current.on('payment', (payment: Payment) => {
-      setNewPayments((prevPayments) => [payment, ...prevPayments]);
+    socketRef.current.on('withdraw', (withdraw: Withdraw) => {
+      setNewWithdraws((prevWithdraw) => [withdraw, ...prevWithdraw]);
     });
 
-    socketRef.current.on('changed-payment-status', (newPayment) => {
-      setNewPayments(prevPayments => {
-        return prevPayments.map(payment =>
-          payment._id === newPayment.id ? {...payment, status: newPayment.status} : payment
+    socketRef.current.on('changed-withdraw-status', (newWithdraw) => {
+      setNewWithdraws(prevWithdraws => {
+        return prevWithdraws.map(withdraw =>
+          withdraw._id === newWithdraw.id ? {...withdraw, status: newWithdraw.status} : withdraw
         );
       });
     })
@@ -57,37 +57,37 @@ const PaymentRequests = () => {
   }, []);
 
   useEffect(() => {
-    const fetchTodayPayments = async () => {
+    const fetchTodayWithdraws = async () => {
       try {
         const startOfTodayMinusFiveDays = dayjs().startOf('day').add(-2, 'days').toDate();
         const endOfToday = dayjs().endOf('day').toDate();
-        const response = await axiosApi.get('/operation-requests/payments', {
+        const response = await axiosApi.get('/operation-requests/withdrawals', {
           params: {
             start_date: startOfTodayMinusFiveDays,
             end_date: endOfToday,
             status: "null",
           },
         });
-        setNewPayments((prevPayments) => [...prevPayments].concat(response.data));
+        setNewWithdraws((prevWithdraws) => [...prevWithdraws].concat(response.data));
       } catch (error) {
-        console.error('Error fetching today\'s payments:', error);
+        console.error('Error fetching today\'s withdraws:', error);
       }
     };
 
-    fetchTodayPayments();
+    fetchTodayWithdraws();
   }, []);
 
-  const changePaymentRequestStatus = (id: string, status: boolean | null) => {
+  const changeWithdrawRequestStatus = (id: string, status: boolean | null) => {
     if (socketRef) {
-      socketRef.current?.emit('change-payment-status', {id, status});
+      socketRef.current?.emit('change-withdraw-status', {id, status});
     }
     setIsModalOpen(false);
   };
 
   const openModal = (id: string, status: boolean) => {
-    setPaymentInfo({
-      paymentId: id,
-      paymentStatus: status,
+    setWithdrawInfo({
+      withdrawId: id,
+      withdrawStatus: status,
     });
     setIsModalOpen(true);
   }
@@ -99,7 +99,7 @@ const PaymentRequests = () => {
   return (
     <Grid>
       <Typography variant="h2">
-        Пополнение
+        Вывод
       </Typography>
       <TableContainer component={Paper}>
         <Table aria-label="customized table">
@@ -108,31 +108,27 @@ const PaymentRequests = () => {
               <TableCell>Дата</TableCell>
               <TableCell>ФИО</TableCell>
               <TableCell>Сумма</TableCell>
-              <TableCell>Чек</TableCell>
+              <TableCell>Номер телефона</TableCell>
               <TableCell>Статус</TableCell>
               <TableCell>Действие</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {payments.map(payment => (
-              <TableRow key={payment._id}>
-                <TableCell>{dayjs(payment.payment_date).add(18, 'hour').format('DD.MM.YYYY HH:mm:ss')}</TableCell>
-                <TableCell>{payment.sender_name}</TableCell>
-                <TableCell>{payment.amount}</TableCell>
+            {withdraws.map(withdraw => (
+              <TableRow key={withdraw._id}>
+                <TableCell>{dayjs(withdraw.withdrawal_request_date).add(18, 'hour').format('DD.MM.YYYY HH:mm:ss')}</TableCell>
+                <TableCell>{withdraw.recipient_name}</TableCell>
+                <TableCell>{withdraw.amount}</TableCell>
+                <TableCell>{withdraw.phone_number}</TableCell>
                 <TableCell>
-                  <a href={`http://localhost:8000/recharge-receipts/${payment.filename}`} target="_blank">
-                    Посмотреть чек
-                  </a>
+                  {withdraw.status === null && 'В ожидании'}
+                  {withdraw.status === true && 'Принят'}
+                  {withdraw.status === false && 'Отклонен'}
                 </TableCell>
                 <TableCell>
-                  {payment.status === null && 'В ожидании'}
-                  {payment.status === true && 'Принят'}
-                  {payment.status === false && 'Отклонен'}
-                </TableCell>
-                <TableCell>
-                  {payment.status === null && <>
-                      <Button color="success" onClick={() => openModal(payment._id, true)}>Принять</Button>
-                      <Button color="error" onClick={() => openModal(payment._id, false)}>Отклонить</Button>
+                  {withdraw.status === null && <>
+                      <Button color="success" onClick={() => openModal(withdraw._id, true)}>Принять</Button>
+                      <Button color="error" onClick={() => openModal(withdraw._id, false)}>Отклонить</Button>
                   </>}
                 </TableCell>
               </TableRow>
@@ -150,7 +146,7 @@ const PaymentRequests = () => {
           </Typography>
           <Box sx={{display: 'flex', justifyContent: 'flex-end', mt: '20px'}}>
             <Button color="success"
-                    onClick={() => changePaymentRequestStatus(paymentInfo.paymentId, paymentInfo.paymentStatus)}>Подтвердить</Button>
+                    onClick={() => changeWithdrawRequestStatus(withdrawInfo.withdrawId, withdrawInfo.withdrawStatus)}>Подтвердить</Button>
             <Button color="error" onClick={handleCloseModal}>Отменить</Button>
           </Box>
         </Box>
@@ -159,4 +155,4 @@ const PaymentRequests = () => {
   );
 };
 
-export default PaymentRequests;
+export default WithdrawRequests;

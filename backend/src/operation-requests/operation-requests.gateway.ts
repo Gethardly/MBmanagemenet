@@ -65,14 +65,19 @@ export class OperationRequestsGateway
     return this.rechargeService.changeOne(payload.id, payload)
   }
 
-  @SubscribeMessage('chnage-withdraw-status')
+  @SubscribeMessage('change-withdraw-status')
   handleWithdrawMessage(client: Socket, payload: { id: string, status: boolean }) {
     this.server.emit('changed-withdraw-status', payload);
     return this.withdrawService.changeOne(payload.id, payload);
   }
 
-  public sendToAll(payload: RechargeDocument | WithdrawDocument): void {
-    this.logger.log(`Sending message to all clients`);
+  public sendToAllPayment(payload: RechargeDocument | WithdrawDocument): void {
+    this.logger.log(`Sending payment message to all clients`);
     this.server.emit('payment', payload);
+  }
+
+  public sendToAllWithdraw(payload: WithdrawDocument): void {
+    this.logger.log(`Sending message to all clients`);
+    this.server.emit('withdraw', payload);
   }
 }

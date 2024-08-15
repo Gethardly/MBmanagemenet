@@ -12,7 +12,7 @@ import {
   TableCell,
   TableContainer,
   TableHead,
-  TableRow
+  TableRow, Typography
 } from '@mui/material';
 import dayjs, { Dayjs } from 'dayjs';
 import React, { useState } from 'react';
@@ -28,12 +28,12 @@ interface FilterDate {
 
 const paymentStatuses = [
   {label: 'Все', value: 'all'},
-  {label: 'Создан', value: 'null'},
+  {label: 'В ожидании', value: 'null'},
   {label: 'Принят', value: 'true'},
   {label: 'Отклонен', value: 'false'},
 ]
 
-const OperationsHistory = () => {
+const PaymentHistory = () => {
   const [payments, setNewPayments] = useState<Payment[] | null>(null);
   const [filterDate, setNewFilterDate] = useState<FilterDate>({
     startDate: dayjs().startOf('day').add(-7, 'days'),
@@ -94,6 +94,9 @@ const OperationsHistory = () => {
 
   return (
     <Grid>
+      <Typography variant="h2">
+        История поплнений
+      </Typography>
         <LocalizationProvider dateAdapter={AdapterDayjs}>
           <Grid container spacing={2}>
             <Grid item>
@@ -191,4 +194,4 @@ const OperationsHistory = () => {
   );
 };
 
-export default OperationsHistory;
+export default PaymentHistory;

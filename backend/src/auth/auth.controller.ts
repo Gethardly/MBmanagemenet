@@ -17,10 +17,10 @@ import { JwtAuthGuard } from './jwt/jwt-auth.guard';
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @Post('/signup')
+/*  @Post('/signup')
   signUp(@Body() signUpDto: SignUpDto): Promise<IUser | Error> {
     return this.authService.signUp(signUpDto);
-  }
+  }*/
 
   @Post('/login')
   login(@Body() loginDto: LoginDto): Promise<IUser | Error> {

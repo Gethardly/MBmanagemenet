@@ -61,7 +61,7 @@ export class OperationRequestsController {
         filename: file.filename,
       };
       const savedData = await this.rechargeService.saveInDB(dataToSave);
-      this.operationRequestsGateway.sendToAll(savedData);
+      this.operationRequestsGateway.sendToAllPayment(savedData);
 
       return {
         savedData
@@ -75,7 +75,7 @@ export class OperationRequestsController {
   async withdraw(@Body() withdrawData: WithdrawDto) {
     const savedData = await this.withdrawService.saveInDB(withdrawData);
 
-    this.operationRequestsGateway.sendToAll(savedData);
+    this.operationRequestsGateway.sendToAllWithdraw(savedData);
     return {
       savedData
     };

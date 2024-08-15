@@ -60,3 +60,12 @@ export interface Payment {
   status: boolean | null;
   filename: string;
 }
+
+export interface Withdraw {
+  _id: string;
+  status: null | bolean;
+  recipient_name: string;
+  withdrawal_request_date: Date;
+  amount: number;
+  phone_number: string;
+}
