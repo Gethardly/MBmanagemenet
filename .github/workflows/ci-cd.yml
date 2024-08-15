@@ -19,7 +19,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: '20'
 
       - name: Install dependencies
         run: npm install
@@ -45,7 +45,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: '20'
 
       - name: Install dependencies
         run: npm install
@@ -87,21 +87,25 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             # Перейдите в каталог вашего проекта
-            cd /path/to/your/project
+            cd /path/to/MBmanagement
 
             # Обновите код
-            git pull origin main
+            git pull origin develop
 
             # Обновите фронтенд
             cd frontend
             npm install
             npm run build
-            # Убедитесь, что статические файлы развернуты на сервере
+            # Обновите статические файлы
+            cp -r build/* /path/to/your/static/files
 
             # Обновите бэкенд
             cd ../backend
             npm install
             npm run build
-            # Перезапустите сервисы (зависит от вашей конфигурации)
+
+            # Перезапустите сервисы
             sudo systemctl restart your-backend-service
-            sudo systemctl restart your-frontend-service
+
+            # Если необходимо, обновите конфигурацию Nginx
+            sudo nginx -s reload
