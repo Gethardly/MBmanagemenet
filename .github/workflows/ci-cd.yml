@@ -11,10 +11,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: '20.x'
 
@@ -32,19 +32,19 @@ jobs:
       - name: Deploy backend
         uses: easingthemes/ssh-deploy@v2.1.5
         env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
-          REMOTE_USER: ${{ secrets.REMOTE_USER }}
-          TARGET: /path/to/backend
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
+          REMOTE_HOST: ${{ secrets.VPS_IP }}
+          REMOTE_USER: ${{ secrets.VPS_USER }}
+          TARGET: /root/MBmanagemenet/backend
         with:
           args: 'rsync -avz --delete ./backend/dist/'
 
       - name: Deploy frontend
         uses: easingthemes/ssh-deploy@v2.1.5
         env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
-          REMOTE_USER: ${{ secrets.REMOTE_USER }}
-          TARGET: /path/to/frontend/build
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
+          REMOTE_HOST: ${{ secrets.VPS_IP }}
+          REMOTE_USER: ${{ secrets.VPS_USER }}
+          TARGET: /root/MBmanagemenet/frontend/build/
         with:
           args: 'rsync -avz --delete ./frontend/build/'
