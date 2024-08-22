@@ -19,7 +19,7 @@ import React, { useState } from 'react';
 import { Payment } from '../../../types';
 import { DateTimePicker, DateTimeValidationError, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import axiosApi from '../../../axios';
+import axiosApi, { API_URL } from '../../../axios';
 
 interface FilterDate {
   startDate: Dayjs,
@@ -176,7 +176,7 @@ const PaymentHistory = () => {
                     <TableCell>{payment.sender_name}</TableCell>
                     <TableCell>{payment.amount}</TableCell>
                     <TableCell>
-                      <a href={`http://localhost:8000/recharge-receipts/${payment.filename}`} target="_blank" rel="noopener noreferrer">
+                      <a href={`${API_URL}/recharge-receipts/${payment.filename}`} target="_blank" rel="noopener noreferrer">
                         Посмотреть чек
                       </a>
                     </TableCell>

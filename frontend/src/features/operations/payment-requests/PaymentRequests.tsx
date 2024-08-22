@@ -4,7 +4,7 @@ import { io, Socket } from 'socket.io-client';
 import { useAppSelector } from '../../../app/hooks';
 import { selectUser } from '../../users/usersSlice';
 import dayjs from 'dayjs';
-import axiosApi from '../../../axios';
+import axiosApi, { API_URL } from '../../../axios';
 import TableContainer from '@mui/material/TableContainer';
 import Table from '@mui/material/Table';
 import TableHead from '@mui/material/TableHead';
@@ -120,7 +120,7 @@ const PaymentRequests = () => {
                 <TableCell>{payment.sender_name}</TableCell>
                 <TableCell>{payment.amount}</TableCell>
                 <TableCell>
-                  <a href={`http://localhost:8000/recharge-receipts/${payment.filename}`} target="_blank" rel="noopener noreferrer">
+                  <a href={`${API_URL}/recharge-receipts/${payment.filename}`} target="_blank" rel="noopener noreferrer">
                     Посмотреть чек
                   </a>
                 </TableCell>
