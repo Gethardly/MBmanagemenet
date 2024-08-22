@@ -1,4 +1,4 @@
-export const SOCKET_SERVER_URL = 'ws://localhost:8000';
+export const SOCKET_SERVER_URL = 'ws://191.101.2.193/api'//'ws://localhost:8000';
 export const modalStyle = {
   position: 'absolute',
   top: '50%',
