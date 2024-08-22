@@ -8,7 +8,7 @@ export class StaticFilesController {
   @Get(':filename')
   //@UseGuards(JwtAuthGuard)
   getFile(@Param('filename') filename: string, @Res() res: Response) {
-    const filePath = join(__dirname, '..', '..', '../public/recharge-receipts', filename);
+    const filePath = join(__dirname, '..', '..', '../dist/src/public/recharge-receipts', filename);
     res.sendFile(filePath);
   }
 }
