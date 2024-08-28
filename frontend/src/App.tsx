@@ -10,6 +10,8 @@ import PaymentHistory from './features/operations/history/PaymentHistory';
 import WithdrawRequests from './features/operations/withdraw-requests/WithdrawRequests';
 import Home from './components/Home';
 import WithdrawHistory from './features/operations/history/WithdrawHistory';
+import CreateUser from './features/users/CreateUser';
+import Users from './features/users/Users';
 
 function App() {
   const user = useAppSelector(selectUser);
@@ -26,6 +28,9 @@ function App() {
           <Route path="/withdraw-history" element={<WithdrawHistory/>}/>
           <Route path="/payment" element={<PaymentRequests />} />
           <Route path="/withdraw" element={<WithdrawRequests/>}/>
+          <Route path="/users" element={<Users />}>
+            <Route path="createUser" element={<CreateUser />} />
+          </Route>
          {/* <Route path="/create-note" element={<CreateNote />} />
           <Route path="/edit-note/:id" element={<CreateNote />} />
            <Route path="/register" element={<CreateUser />} />*/

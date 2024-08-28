@@ -13,7 +13,7 @@ import TableCell from '@mui/material/TableCell';
 import TableBody from '@mui/material/TableBody';
 import CloseIcon from '@mui/icons-material/Close';
 import { Payment } from '../../../types';
-import { modalStyle, SOCKET_SERVER_URL } from '../constants';
+import { modalStyle, SOCKET_SERVER_URL } from '../../../constants';
 
 interface PaymentInfo {
   paymentId: string,

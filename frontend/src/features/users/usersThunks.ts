@@ -1,9 +1,18 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { GlobalError, LoginMutation, User, UserMutation, ValidationError, } from '../../types';
+import {
+  DeletedUserResponse,
+  GlobalError,
+  LoginMutation,
+  User,
+  UserMutation,
+  UsersListResponse,
+  ValidationError,
+} from '../../types';
 import axiosApi from '../../axios';
 import { isAxiosError } from 'axios';
 import { setUser } from './usersSlice';
 import { AppDispatch, RootState } from '../../app/store';
+type RequestParams = { page: number; perPage: number } | undefined;
 
 export function handleAxiosError(e: any, rejectWithValue: any) {
   if (isAxiosError(e) && e.response) {
@@ -81,4 +90,18 @@ export const updateUser = createAsyncThunk<
     }
     throw e;
   }
+});
+
+export const getUsersList = createAsyncThunk<UsersListResponse, RequestParams>('users/getAll', async (params) => {
+  let queryString = '';
+  if (params) {
+    queryString = `?page=${params.page}&perPage=${params.perPage}`;
+  }
+  const response = await axiosApi.get<UsersListResponse>(`/users${queryString}`);
+  return response.data;
+});
+
+export const deleteUser = createAsyncThunk<DeletedUserResponse, string>('users/deleteOne', async (userId) => {
+  const response = await axiosApi.delete('/users/' + userId);
+  return response.data;
 });

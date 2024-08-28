@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
-import { User } from './schemas/user.schema';
+import { User, UserDocument } from './schemas/user.schema';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { SignUpDto } from './dto/signup.dto';
@@ -25,13 +25,14 @@ export class AuthService {
     private userModel: Model<User>,
     private readonly jwtService: JwtService,
     private readonly config: ConfigService,
-  ) {}
+  ) {
+  }
 
-  async signUp(signUpDto: SignUpDto): Promise<IUser | Error> {
+  async signUp(signUpDto: SignUpDto): Promise<UserDocument | Error> {
     try {
-      const { displayName, email, password } = signUpDto;
+      const {displayName, email, password} = signUpDto;
 
-      const duplicateEmail = await this.userModel.findOne({ email });
+      const duplicateEmail = await this.userModel.findOne({email});
 
       if (duplicateEmail) {
         return new BadRequestException('This email already taken.');
@@ -46,7 +47,7 @@ export class AuthService {
       });
 
       user['token'] = this.jwtService.sign(
-        { id: user._id },
+        {id: user._id},
         {
           secret: this.config.get('JWT_SECRET'),
           expiresIn: this.config.get('JWT_EXPIRES'),
@@ -57,7 +58,7 @@ export class AuthService {
     } catch (e) {
       if (e.name === 'ValidationError') {
         console.log('here');
-        return new UnprocessableEntityException({ error: e, data: 'hello' });
+        return new UnprocessableEntityException({error: e, data: 'hello'});
       }
 
       throw e;
@@ -66,9 +67,9 @@ export class AuthService {
 
   async login(loginDto: LoginDto): Promise<IUser | Error> {
     try {
-      const { email, password } = loginDto;
+      const {email, password} = loginDto;
 
-      const user = await this.userModel.findOne({ email });
+      const user = await this.userModel.findOne({email});
 
       if (!user) {
         throw new UnauthorizedException({
@@ -85,7 +86,7 @@ export class AuthService {
       }
 
       const token = this.jwtService.sign(
-        { id: user._id },
+        {id: user._id},
         {
           secret: this.config.get<string>('JWT_SECRET'),
           expiresIn: this.config.get<string>('JWT_EXPIRES'),
@@ -103,17 +104,17 @@ export class AuthService {
     }
   }
 
-  async changeUser(id: string, changeUser: SignUpDto): Promise<IUser | Error> {
+  async changeUser(id: string, changeUser: SignUpDto): Promise<UserDocument | Error> {
     if (!mongoose.isValidObjectId(id)) {
       throw new UnprocessableEntityException('Invalid user id');
     }
     try {
       const user = await this.userModel.findById(id);
       if (!user) {
-        throw new NotFoundException({ error: 'Пользователь не найден.' });
+        throw new NotFoundException({error: 'Пользователь не найден.'});
       }
 
-      const { email, displayName, password } = changeUser;
+      const {email, displayName, password} = changeUser;
       if (email && email !== user.email) {
         user.email = email;
       }
@@ -137,13 +138,40 @@ export class AuthService {
       if (!mongoose.isValidObjectId(id)) {
         throw new UnprocessableEntityException('Invalid user id');
       }
-      const user = Request['user'];
-      if (user._id.toString() !== id) {
-        throw new NotFoundException({ error: 'Пользователь не найден.' });
+      const user = await this.userModel.findOne({_id: id});
+      if (!user) {
+        throw new NotFoundException({error: 'Пользователь не найден.'});
       }
       return user;
     } catch (e) {
-      throw new e();
+      throw e;
+    }
+  }
+
+  async deleteUser(id: string) {
+    try {
+      const user = await this.userModel.findById(id);
+      if (!user) {
+        throw new NotFoundException({error: 'Пользователь не найден.'});
+      }
+      return await this.userModel.deleteOne({_id: id});
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  async findAndCountAll(page: number, perPage: number): Promise<[
+    number,
+    UserDocument[],
+  ]> {
+    try {
+      const count = await this.userModel.count();
+      const users = await this.userModel.find()
+        .skip((page - 1) * perPage)
+        .limit(perPage);
+      return [count, users];
+    } catch (e) {
+      throw e;
     }
   }
 }

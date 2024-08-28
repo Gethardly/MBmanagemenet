@@ -2,7 +2,7 @@ import axios, { InternalAxiosRequestConfig } from 'axios';
 import { RootState } from './app/store';
 import { Store } from '@reduxjs/toolkit';
 
-export const API_URL = '/api'//'http://localhost:8000/'
+export const API_URL = 'http://localhost:8000/'//'/api'
 
 const axiosApi = axios.create({
   baseURL: API_URL,

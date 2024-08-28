@@ -7,6 +7,7 @@ export interface User {
   _id: string;
   email: string;
   displayName: string;
+  role: string;
   token: string;
 }
 
@@ -14,6 +15,19 @@ export interface UserMutation {
   email: string;
   password: string;
   displayName: string;
+}
+
+export interface UsersListResponse {
+  users: User[];
+  page: number;
+  pages: number;
+  perPage: number;
+  count: number;
+}
+
+export interface DeletedUserResponse {
+  acknowledged: boolean;
+  deletedCount: number;
 }
 
 export interface ValidationError {
@@ -30,20 +44,6 @@ export interface ValidationError {
 
 export interface GlobalError {
   error: string;
-}
-
-export interface Note {
-  _id: string;
-  title: string;
-  description: string;
-  createdAt: string;
-  updatedAt: string;
-  __v: number;
-}
-
-export interface NoteMutation {
-  title: string;
-  description: string;
 }
 
 export interface ErrorResponse {

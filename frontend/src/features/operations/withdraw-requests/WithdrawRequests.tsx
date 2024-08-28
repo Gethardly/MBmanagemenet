@@ -8,12 +8,12 @@ import TableCell from '@mui/material/TableCell';
 import TableBody from '@mui/material/TableBody';
 import dayjs from 'dayjs';
 import CloseIcon from '@mui/icons-material/Close';
-import { modalStyle, SOCKET_SERVER_URL } from '../constants';
 import { useAppSelector } from '../../../app/hooks';
 import { selectUser } from '../../users/usersSlice';
 import { Withdraw } from '../../../types';
 import { io, Socket } from 'socket.io-client';
 import axiosApi from '../../../axios';
+import { modalStyle, SOCKET_SERVER_URL } from '../../../constants';
 
 interface WithdrawInfo {
   withdrawId: string;
