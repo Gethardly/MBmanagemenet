@@ -83,8 +83,15 @@ const UserMenu: React.FC<Props> = ({user}) => {
         <Divider/>
         <MenuItem>
           <HistoryIcon sx={{mr: 1}}/>
-          <Link to="/operations-history" style={{textDecoration: 'none', color: '#000', fontSize: '16px'}}>
-            История операций
+          <Link to="/payment-history" style={{textDecoration: 'none', color: '#000', fontSize: '16px'}}>
+            История пополнений
+          </Link>
+        </MenuItem>
+        <Divider/>
+        <MenuItem>
+          <HistoryIcon sx={{mr: 1}}/>
+          <Link to="/withdraw-history" style={{textDecoration: 'none', color: '#000', fontSize: '16px'}}>
+            История выводов
           </Link>
         </MenuItem>
         <Divider/>
