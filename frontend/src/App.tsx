@@ -12,6 +12,7 @@ import Home from './components/Home';
 import WithdrawHistory from './features/operations/history/WithdrawHistory';
 import CreateUser from './features/users/CreateUser';
 import Users from './features/users/Users';
+import Phones from './features/phones/Phones';
 
 function App() {
   const user = useAppSelector(selectUser);
@@ -28,13 +29,13 @@ function App() {
           <Route path="/withdraw-history" element={<WithdrawHistory/>}/>
           <Route path="/payment" element={<PaymentRequests />} />
           <Route path="/withdraw" element={<WithdrawRequests/>}/>
+        </Route>
+
+        <Route element={<Protected user={user} role="admin"/>}>
           <Route path="/users" element={<Users />}>
             <Route path="createUser" element={<CreateUser />} />
           </Route>
-         {/* <Route path="/create-note" element={<CreateNote />} />
-          <Route path="/edit-note/:id" element={<CreateNote />} />
-           <Route path="/register" element={<CreateUser />} />*/
-         }
+          <Route path="/phones" element={<Phones/>}/>
         </Route>
       </Routes>
     </Layout>

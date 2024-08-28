@@ -1,4 +1,5 @@
 import { SetMetadata } from '@nestjs/common';
+import { Request } from 'express';
 
 export const Roles = (...roles: string[]) => SetMetadata('roles', roles);
 
@@ -17,10 +18,8 @@ export class RolesGuard implements CanActivate {
     if (!roles) {
       return true;
     }
+    const currentUser = Request['user'];
 
-    const request = context.switchToHttp().getRequest();
-    const user = request.user;
-
-    return roles.some(role => user.roles?.includes(role));
+    return roles.some(role => currentUser.role === role);
   }
 }

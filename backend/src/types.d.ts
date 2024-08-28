@@ -5,3 +5,5 @@ export interface IUser  {
   role: 'admin' | 'user';
   token?: string;
 }
+
+export type BankPhonesEnum = 'MBANK' | 'OPTIMA' | 'KICB' | 'RSK'

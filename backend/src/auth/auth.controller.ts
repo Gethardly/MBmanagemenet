@@ -1,19 +1,11 @@
-import {
-  Body,
-  Controller, Delete,
-  Get,
-  Param,
-  Post,
-  Put, Query,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards, } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { SignUpDto } from './dto/signup.dto';
 import { IUser } from '../types';
 import { JwtAuthGuard } from './jwt/jwt-auth.guard';
 import { UserDocument } from './schemas/user.schema';
-import { Roles } from './jwt/jwt.roles.guard';
+import { Roles, RolesGuard } from './jwt/jwt.roles.guard';
 
 @Controller()
 export class AuthController {
@@ -21,7 +13,8 @@ export class AuthController {
   }
 
   @Post('/signup')
-  @UseGuards(JwtAuthGuard)
+  @Roles('admin')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   signUp(@Body() signUpDto: SignUpDto): Promise<UserDocument | Error> {
     return this.authService.signUp(signUpDto);
   }
@@ -43,15 +36,9 @@ export class AuthController {
     return this.authService.getUserInfo(id);
   }
 
-  @Delete('/users/:id')
-  @UseGuards(JwtAuthGuard)
-  deleteUser(@Param('id') id: string) {
-    return this.authService.deleteUser(id);
-  }
-
   @Get('/users')
-  @UseGuards(JwtAuthGuard)
   @Roles('admin')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   async getUsers(@Query('page') page: string,
                  @Query('perPage') perPage: string,) {
     let pageNumber = parseInt(page);
@@ -72,5 +59,12 @@ export class AuthController {
       count,
       perPage: perPageNumber,
     };
+  }
+
+  @Delete('/users/:id')
+  @Roles('admin')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  deleteUser(@Param('id') id: string) {
+    return this.authService.deleteUser(id);
   }
 }
