@@ -2,7 +2,7 @@ import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import Layout from './components/Layout';
 import Login from './features/users/Login';
-import Protected from './components/Protected';
+import ProtectedRoute from './routesGuard/ProtectedRoute';
 import { useAppSelector } from './app/hooks';
 import { selectUser } from './features/users/usersSlice';
 import PaymentRequests from './features/operations/payment-requests/PaymentRequests';
@@ -13,6 +13,7 @@ import WithdrawHistory from './features/operations/history/WithdrawHistory';
 import CreateUser from './features/users/CreateUser';
 import Users from './features/users/Users';
 import Phones from './features/phones/Phones';
+import AdminRoute from './routesGuard/AdminRoute';
 
 function App() {
   const user = useAppSelector(selectUser);
@@ -23,15 +24,14 @@ function App() {
         <Route path="*" element={"Not found"} />
         <Route path="/login" element={<Login />} />
 
-        <Route element={<Protected user={user} />}>
+        <Route element={<ProtectedRoute user={user}/>}>
           <Route path="/" element={<Home/>}/>
           <Route path="/payment-history" element={<PaymentHistory/>}/>
           <Route path="/withdraw-history" element={<WithdrawHistory/>}/>
           <Route path="/payment" element={<PaymentRequests />} />
           <Route path="/withdraw" element={<WithdrawRequests/>}/>
         </Route>
-
-        <Route element={<Protected user={user} role="admin"/>}>
+        <Route element={<AdminRoute user={user}/>}>
           <Route path="/users" element={<Users />}>
             <Route path="createUser" element={<CreateUser />} />
           </Route>
