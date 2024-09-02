@@ -6,4 +6,7 @@ export interface IUser  {
   token?: string;
 }
 
-export type BankPhonesEnum = 'MBANK' | 'OPTIMA' | 'KICB' | 'RSK'
+export interface Bank {
+  _id: string;
+  name: string;
+}

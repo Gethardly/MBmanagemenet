@@ -3,14 +3,13 @@ import { Phone } from './phone.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { PhoneDto } from './dto/phoneDto';
-import { BankPhonesEnum } from '../types';
 
 @Injectable()
 export class PhoneService {
   private phoneIndices: { [key: string]: number } = {};
   constructor(@InjectModel(Phone.name) private bankModal: Model<Phone>) {}
 
-  async getPhones(bank: BankPhonesEnum) {
+  async getPhones(bank: string) {
     const phones = await this.bankModal.find({ bank });
 
     if (!phones || phones.length === 0) {

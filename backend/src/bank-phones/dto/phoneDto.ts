@@ -1,5 +1,4 @@
 import { IsNotEmpty, IsString } from 'class-validator';
-import { BankPhonesEnum } from '../../types';
 
 export class PhoneDto {
   id: string;
@@ -10,5 +9,5 @@ export class PhoneDto {
 
   @IsNotEmpty()
   @IsString()
-  bank: BankPhonesEnum;
+  bank: string;
 }

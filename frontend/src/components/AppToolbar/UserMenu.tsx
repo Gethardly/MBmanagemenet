@@ -7,6 +7,10 @@ import GroupIcon from '@mui/icons-material/Groups';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import LogoutIcon from '@mui/icons-material/Logout';
 import HistoryIcon from '@mui/icons-material/History';
+import AccountBoxIcon from '@mui/icons-material/AccountBox';
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import MoveToInboxIcon from '@mui/icons-material/MoveToInbox';
+import OutboxIcon from '@mui/icons-material/Outbox';
 import { getEditingUser, updateUser } from '../../features/users/usersThunks';
 import ModalBody from '../ModalBody';
 import UserForm from '../../features/users/components/UserForm';
@@ -16,12 +20,19 @@ import {
   selectOneEditingUser,
   unsetUser,
 } from '../../features/users/usersSlice';
-import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import useConfirm from '../Dialogs/Confirm/useConfirm';
 import dayjs from 'dayjs';
 import 'dayjs/locale/ru';
 
 dayjs.locale('ru');
+
+const linksStyles = {
+  textDecoration: 'none',
+  color: '#000',
+  fontSize: '16px',
+  display: 'flex',
+  alignItems: 'center'
+};
 
 interface Props {
   user: User;
@@ -82,28 +93,37 @@ const UserMenu: React.FC<Props> = ({user}) => {
         </MenuItem>
         <Divider/>
         <MenuItem>
-          <HistoryIcon sx={{mr: 1}}/>
-          <Link to="/payment-history" style={{textDecoration: 'none', color: '#000', fontSize: '16px'}}>
+          <Link to="/payment-history" style={linksStyles}>
+            <HistoryIcon sx={{mr: 1}}/>
             История пополнений
           </Link>
         </MenuItem>
         <Divider/>
         <MenuItem>
-          <HistoryIcon sx={{mr: 1}}/>
-          <Link to="/withdraw-history" style={{textDecoration: 'none', color: '#000', fontSize: '16px'}}>
+          <Link to="/withdraw-history" style={linksStyles}>
+            <HistoryIcon sx={{mr: 1}}/>
             История выводов
           </Link>
         </MenuItem>
         <Divider/>
         <MenuItem>
-          <Link to="/payment" style={{textDecoration: 'none', color: '#000', fontSize: '16px'}}>
+          <Link to="/payment" style={linksStyles}>
+            <MoveToInboxIcon sx={{mr: 1}}/>
             Пополнение
           </Link>
         </MenuItem>
         <Divider/>
         <MenuItem>
-          <Link to="/withdraw" style={{textDecoration: 'none', color: '#000', fontSize: '16px'}}>
+          <Link to="/withdraw" style={linksStyles}>
+            <OutboxIcon sx={{mr: 1}}/>
             Вывод
+          </Link>
+        </MenuItem>
+        <Divider/>
+        <MenuItem>
+          <Link to="/banks" style={linksStyles}>
+            <AccountBalanceIcon sx={{mr: 1}}/>
+            Банки
           </Link>
         </MenuItem>
         {user.role === 'admin' && [
@@ -115,40 +135,40 @@ const UserMenu: React.FC<Props> = ({user}) => {
               navigate('/users');
             }}
           >
-            <GroupIcon sx={{ mr: 1 }} />
+            <GroupIcon sx={{mr: 1}}/>
             Управление пользователями
           </MenuItem>
         ]}
-          <Divider/>
-          <MenuItem
-            sx={{justifyContent: 'center'}}
-            onClick={async () => {
-              if (
-                await confirm(
-                  'Выход',
-                  'Вы действительно хотите выйти? Так быстро?'
-                )
-              ) {
-                dispatch(unsetUser());
-                handleClose();
-                navigate('/');
-              }
-            }}
-          >
-            Выйти
-            <LogoutIcon sx={{ml: 1}}/>
-          </MenuItem>
-          </Menu>
-        {editingUser && (
-          <ModalBody isOpen={isDialogOpen} onClose={() => setIsDialogOpen(false)}>
-        <UserForm
-          error={error}
-          onSubmit={onFormSubmit}
-          existingUser={editingUser}
-          isEdit
-          isLoading={editLoading}
-        />
-      </ModalBody>
+        <Divider/>
+        <MenuItem
+          sx={{justifyContent: 'center'}}
+          onClick={async () => {
+            if (
+              await confirm(
+                'Выход',
+                'Вы действительно хотите выйти? Так быстро?'
+              )
+            ) {
+              dispatch(unsetUser());
+              handleClose();
+              navigate('/');
+            }
+          }}
+        >
+          Выйти
+          <LogoutIcon sx={{ml: 1}}/>
+        </MenuItem>
+      </Menu>
+      {editingUser && (
+        <ModalBody isOpen={isDialogOpen} onClose={() => setIsDialogOpen(false)}>
+          <UserForm
+            error={error}
+            onSubmit={onFormSubmit}
+            existingUser={editingUser}
+            isEdit
+            isLoading={editLoading}
+          />
+        </ModalBody>
       )}
     </>
   );

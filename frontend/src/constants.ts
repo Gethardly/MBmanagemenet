@@ -1,4 +1,4 @@
-export const MainColorGreen = '#2e7d32';
+export const MainColor = '#367dd9';
 
 export interface IRole {
   prettyName: string;

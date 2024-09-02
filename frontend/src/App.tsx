@@ -14,6 +14,7 @@ import CreateUser from './features/users/CreateUser';
 import Users from './features/users/Users';
 import Phones from './features/phones/Phones';
 import AdminRoute from './routesGuard/AdminRoute';
+import Banks from './features/banks/Banks';
 
 function App() {
   const user = useAppSelector(selectUser);
@@ -35,6 +36,7 @@ function App() {
           <Route path="/users" element={<Users />}>
             <Route path="createUser" element={<CreateUser />} />
           </Route>
+          <Route path="/banks" element={<Banks/>}/>
           <Route path="/phones" element={<Phones/>}/>
         </Route>
       </Routes>

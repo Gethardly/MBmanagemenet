@@ -2,7 +2,6 @@ import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } fro
 import { PhoneService } from './phone.service';
 import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
 import { PhoneDto } from './dto/phoneDto';
-import { BankPhonesEnum } from '../types';
 import { Roles, RolesGuard } from '../auth/jwt/jwt.roles.guard';
 
 @Controller('phone')
@@ -12,17 +11,21 @@ export class PhoneController {
   ) {
   }
   @Get()
-  async getMbankPhone(@Query('bank') bank: BankPhonesEnum) {
+  async getMbankPhone(@Query('bank') bank: string) {
     return this.mbankService.getPhones(bank);
   }
 
-  @Post('')
+  @Post()
   @Roles('admin')
   @UseGuards(JwtAuthGuard, RolesGuard)
   async createMbankPhone(@Body() phone: PhoneDto) {
-    const savedData = await this.mbankService.createPhone(phone);
-    return {
-      savedData
+    try {
+      const savedData = await this.mbankService.createPhone(phone);
+      return {
+        savedData
+      }
+    } catch (e) {
+      return e
     }
   }
 

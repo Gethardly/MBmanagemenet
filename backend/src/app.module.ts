@@ -6,16 +6,13 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { User, UserSchema } from './auth/schemas/user.schema';
 import { JwtService } from '@nestjs/jwt';
-import { NotesModule } from './notes/notes.module';
-import { NotesController } from './notes/notes.controller';
-import { NotesService } from './notes/notes.service';
-import { Notes, NotesSchema } from './notes/schema/notes.schema';
 import { OperationRequestsModule } from './operation-requests/operation-requests.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { StaticFilesController } from './static-files/static-files.controller';
 import { MethodFilterMiddleware } from './middlewares/MethodFilterMiddleware';
-import { PhoneModule } from './mbank-phone/phone.module';
+import { PhoneModule } from './bank-phones/phone.module';
+import { BanksModule } from './banks/banks.module';
 
 @Module({
   imports: [
@@ -31,18 +28,17 @@ import { PhoneModule } from './mbank-phone/phone.module';
     }),
     MongooseModule.forFeature([
       { name: User.name, schema: UserSchema },
-      { name: Notes.name, schema: NotesSchema },
     ]),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', '..', 'public'),
     }),
     AuthModule,
-    NotesModule,
     OperationRequestsModule,
     PhoneModule,
+    BanksModule,
   ],
-  controllers: [AuthController, NotesController, StaticFilesController],
-  providers: [AuthService, JwtService, NotesService,],
+  controllers: [AuthController, StaticFilesController],
+  providers: [AuthService, JwtService,],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
