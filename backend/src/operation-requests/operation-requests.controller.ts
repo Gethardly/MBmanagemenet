@@ -92,10 +92,4 @@ export class OperationRequestsController {
   getWithdrawals(@Query() filterData: GetRechargeDto) {
     return this.withdrawService.getAll(filterData);
   }
-
-  @Put('payment')
-  @UseGuards(JwtAuthGuard)
-  changePayment(newPayment) {
-    return
-  }
 }
