@@ -22,7 +22,14 @@ const run = async () => {
     displayName: 'admin',
     email: 'admin@test.com',
     role: 'admin',
-    password: await bcrypt.hash('admin', 10),
+    password: await bcrypt.hash('adminTeka', 10),
+  });
+
+  await User.create({
+    displayName: 'user',
+    email: 'user@test.com',
+    role: 'user',
+    password: await bcrypt.hash('user', 10),
   });
 
   await db.close();
