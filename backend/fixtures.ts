@@ -26,7 +26,7 @@ const run = async () => {
   });
 
   await User.create({
-    displayName: 'user',
+    displayName: 'Operator',
     email: 'user@test.com',
     role: 'user',
     password: await bcrypt.hash('user', 10),
