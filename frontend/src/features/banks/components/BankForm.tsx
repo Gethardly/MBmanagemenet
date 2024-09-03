@@ -3,11 +3,11 @@ import { Box, Button, Grid, TextField, Typography } from '@mui/material';
 import { Bank } from '../../../types';
 
 interface Props {
-  changedBank: Bank | null,
-  sendData: () => void,
-  handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void,
-  setIsModalOpen: (state: boolean) => void,
-  btnDisabled: boolean,
+  changedBank: Bank | null;
+  sendData: () => void;
+  handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  setIsModalOpen: (state: boolean) => void;
+  btnDisabled: boolean;
 }
 
 const BankForm: React.FC<Props> = ({changedBank, sendData, handleChange, setIsModalOpen, btnDisabled}) => {

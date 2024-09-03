@@ -25,111 +25,129 @@ import { selectBanks } from './banksSlice';
 import { Bank } from '../../types';
 import { getBanks } from './banksThunks';
 import { selectLoginLoading } from '../users/usersSlice';
+import useConfirm from '../../components/Dialogs/Confirm/useConfirm';
 
 const Banks = () => {
-  const dispatch = useAppDispatch();
-  const banks = useAppSelector(selectBanks);
-  const loading = useAppSelector(selectLoginLoading);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [changedBank, setChangedBank] = useState<Bank | null>(null);
-  const [btnDisabled, setBtnDisabled] = useState(false);
+    const dispatch = useAppDispatch();
+    const banks = useAppSelector(selectBanks);
+    const loading = useAppSelector(selectLoginLoading);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [changedBank, setChangedBank] = useState<Bank | null>(null);
+    const [btnDisabled, setBtnDisabled] = useState(false);
+    const {confirm} = useConfirm();
 
-  const openModal = (bank: Bank) => {
-    setChangedBank(bank);
-    setIsModalOpen(true);
-  }
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const {value} = e.target;
-    setChangedBank((prevState) => ({...prevState, bank: value}));
-  }
-
-  const changeBankName = async () => {
-    setBtnDisabled(true);
-    const response = await axiosApi.put('/banks', changedBank);
-    if (response.data?.modifiedCount > 0) {
-      setBtnDisabled(false);
-      setIsModalOpen(false);
-      setChangedBank(null);
-      await dispatch(getBanks());
+    const openModal = (bank: Bank) => {
+      setChangedBank(bank);
+      setIsModalOpen(true);
     }
-  }
 
-  const createBank = async () => {
-    setBtnDisabled(true);
-    const response = await axiosApi.post('/banks', changedBank);
-    if (response.data) {
-      setBtnDisabled(false);
-      setIsModalOpen(false);
-      setChangedBank(null);
-      await dispatch(getBanks());
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const {value} = e.target;
+      setChangedBank((prevState) => ({...prevState, bank: value}));
     }
-  }
 
-  useEffect(() => {
-    dispatch(getBanks());
-  }, [dispatch]);
-  return (
-    <Box sx={{py: 2}}>
-      <Grid container justifyContent="space-between" spacing={1}>
-        <Grid item>
-          <Typography variant="h4" component="h3">Список банков</Typography>
-        </Grid>
-        {loading && <CircularProgress color="primary"/>}
-        <Grid item>
-          <Button
-            color="primary"
-            variant="contained"
-            onClick={() => setIsModalOpen(true)}
-          >
-            <AddIcon sx={{mr: 1}}/>
-            Добавить банк
-          </Button>
-        </Grid>
-      </Grid>
+    const changeBankName = async () => {
+      setBtnDisabled(true);
+      const response = await axiosApi.put('/banks', changedBank);
+      if (response.data?.modifiedCount > 0) {
+        setBtnDisabled(false);
+        setIsModalOpen(false);
+        setChangedBank(null);
+        await dispatch(getBanks());
+      }
+    }
 
-      <Box sx={{mt: 2}}>
-        <Paper elevation={3} sx={{width: '100%', minHeight: '600px', overflowX: 'hidden'}}>
-          <TableContainer>
-            <Table sx={{minWidth: 650}} aria-label="simple table">
-              <TableHead color="secondary">
-                <TableRow>
-                  <StyledTableCell align="center">Название</StyledTableCell>
-                  <StyledTableCell align="right">Управление</StyledTableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {banks.length > 0 ? banks.map((bank) => (
-                  <StyledTableRow key={bank._id}>
-                    <TableCell align="center">{bank.bank}</TableCell>
-                    <TableCell align="right">
-                      <ButtonGroup variant="contained" aria-label="outlined primary button group">
-                        <Button
-                          size="small"
-                          color="error"
-                        >
-                          {loading && <CircularProgress color="success"/>}
-                          <DeleteIcon/>
-                        </Button>
-                        <Button size="small" color="success" onClick={() => openModal(bank)}>
-                          <EditIcon/>
-                        </Button>
-                      </ButtonGroup>
-                    </TableCell>
-                  </StyledTableRow>
-                )) : <h1>Нет данных</h1>}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </Paper>
+    const createBank = async () => {
+      setBtnDisabled(true);
+      const response = await axiosApi.post('/banks', changedBank);
+      if (response.data) {
+        setBtnDisabled(false);
+        setIsModalOpen(false);
+        setChangedBank(null);
+        await dispatch(getBanks());
+      }
+    }
+
+    const deleteBank = async (id: string) => {
+      if (await confirm('Предупреждение', 'Вы действительно хотите удалить банк ?')) {
+        try {
+          const response = await axiosApi.delete('/banks/' + id)
+          if (response.data) {
+            await dispatch(getBanks());
+          }
+        } catch (e) {
+          return e;
+        }
+      }
+    }
+
+    useEffect(() => {
+      dispatch(getBanks());
+    }, [dispatch]);
+    return (
+      <Box sx={{py: 2}}>
+        <Grid container justifyContent="space-between" spacing={1}>
+          <Grid item>
+            <Typography variant="h4" component="h3">Список банков</Typography>
+          </Grid>
+          {loading && <CircularProgress color="primary"/>}
+          <Grid item>
+            <Button
+              color="primary"
+              variant="contained"
+              onClick={() => setIsModalOpen(true)}
+            >
+              <AddIcon sx={{mr: 1}}/>
+              Добавить банк
+            </Button>
+          </Grid>
+        </Grid>
+
+        <Box sx={{mt: 2}}>
+          <Paper elevation={3} sx={{width: '100%', minHeight: '600px', overflowX: 'hidden'}}>
+            <TableContainer>
+              <Table sx={{minWidth: 650}} aria-label="simple table">
+                <TableHead color="secondary">
+                  <TableRow>
+                    <StyledTableCell align="center">Название</StyledTableCell>
+                    <StyledTableCell align="right">Управление</StyledTableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {banks.length > 0 ? banks.map((bank) => (
+                    <StyledTableRow key={bank._id}>
+                      <TableCell align="center">{bank.bank}</TableCell>
+                      <TableCell align="right">
+                        <ButtonGroup variant="contained" aria-label="outlined primary button group">
+                          <Button
+                            size="small"
+                            color="error"
+                            onClick={() => deleteBank(bank._id || '')}
+                          >
+                            {loading && <CircularProgress color="success"/>}
+                            <DeleteIcon/>
+                          </Button>
+                          <Button size="small" color="success" onClick={() => openModal(bank)}>
+                            <EditIcon/>
+                          </Button>
+                        </ButtonGroup>
+                      </TableCell>
+                    </StyledTableRow>
+                  )) : <h1>Нет данных</h1>}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Paper>
+        </Box>
+        {isModalOpen &&
+            <ModalBody isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
+                <BankForm changedBank={changedBank} handleChange={handleChange} setIsModalOpen={setIsModalOpen}
+                          btnDisabled={btnDisabled} sendData={changedBank?._id ? changeBankName : createBank}
+                />
+            </ModalBody>}
       </Box>
-      {isModalOpen &&
-          <ModalBody isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-              <BankForm changedBank={changedBank} handleChange={handleChange} setIsModalOpen={setIsModalOpen}
-                        btnDisabled={btnDisabled} sendData={changedBank?._id ? changeBankName : createBank}/>
-          </ModalBody>}
-    </Box>
-  );
-};
+    );
+  }
+;
 
 export default Banks;

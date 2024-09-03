@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
 import { BanksService } from './banks.service';
 import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
 import { Roles } from '../auth/jwt/jwt.roles.guard';
@@ -36,6 +36,17 @@ export class BanksController {
   async changeBank(@Body() newBank: BanksDto) {
     try {
       return await this.banksService.changeBank(newBank)
+    } catch (e) {
+      return e;
+    }
+  }
+
+  @Delete('/:id')
+  @UseGuards(JwtAuthGuard)
+  @Roles('admin')
+  async deleteBank(@Param('id') id: string) {
+    try {
+      return await this.banksService.deleteBank(id)
     } catch (e) {
       return e;
     }

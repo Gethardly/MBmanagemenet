@@ -22,6 +22,7 @@ import ModalBody from '../../components/ModalBody';
 import axiosApi from '../../axios';
 import PhoneForm from './components/PhoneForm';
 import { Bank } from '../../types';
+import useConfirm from '../../components/Dialogs/Confirm/useConfirm';
 
 export interface Phone {
   _id?: string;
@@ -35,6 +36,7 @@ const Phones = () => {
   const [changedPhone, setChangedPhone] = useState<Phone | null>(null);
   const [newBank, setNewBank] = useState(changedPhone?.bank?._id || '');
   const [loading, setLoading] = useState(false);
+  const { confirm } = useConfirm();
 
   const openModal = (phone: Phone) => {
     setIsModalOpen(true);
@@ -81,7 +83,6 @@ const Phones = () => {
     } catch (e) {
       return e;
     }
-
   }
 
   const createPhone = async () => {
@@ -92,6 +93,19 @@ const Phones = () => {
         setLoading(false);
         setIsModalOpen(false);
         await getPhones();
+      }
+    } catch (e) {
+      return e;
+    }
+  }
+
+  const deletePhone = async (id: string) => {
+    try {
+      if (await confirm('Предупреждение', 'Вы действительно хотите удалить телефон?')) {
+        const response = await axiosApi.delete('/phones/' + id);
+        if (response.data) {
+          await getPhones();
+        }
       }
     } catch (e) {
       return e;
@@ -142,6 +156,7 @@ const Phones = () => {
                           <Button
                             size="small"
                             color="error"
+                            onClick={() => deletePhone(phone._id || '')}
                           >
                             {loading && <CircularProgress color="success"/>}
                             <DeleteIcon/>
