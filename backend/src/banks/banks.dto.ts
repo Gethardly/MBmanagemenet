@@ -1,7 +1,7 @@
 import { IsNotEmpty, IsString } from 'class-validator';
 
 export class BanksDto {
-  id: string;
+  _id: string;
 
   @IsNotEmpty()
   @IsString()

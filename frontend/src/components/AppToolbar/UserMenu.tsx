@@ -11,6 +11,7 @@ import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import MoveToInboxIcon from '@mui/icons-material/MoveToInbox';
 import OutboxIcon from '@mui/icons-material/Outbox';
+import LocalPhoneIcon from '@mui/icons-material/LocalPhone';
 import { getEditingUser, updateUser } from '../../features/users/usersThunks';
 import ModalBody from '../ModalBody';
 import UserForm from '../../features/users/components/UserForm';
@@ -119,24 +120,29 @@ const UserMenu: React.FC<Props> = ({user}) => {
             Вывод
           </Link>
         </MenuItem>
-        <Divider/>
-        <MenuItem>
-          <Link to="/banks" style={linksStyles}>
-            <AccountBalanceIcon sx={{mr: 1}}/>
-            Банки
-          </Link>
-        </MenuItem>
         {user.role === 'admin' && [
+          <Divider/>,
+          <MenuItem>
+            <Link to="/banks" style={linksStyles}>
+              <AccountBalanceIcon sx={{mr: 1}}/>
+              Банки
+            </Link>
+          </MenuItem>,
+          <Divider/>,
+          <MenuItem>
+            <Link to="/phones" style={linksStyles}>
+              <LocalPhoneIcon sx={{mr: 1}}/>
+              Телефоны
+            </Link>
+          </MenuItem>,
           <Divider key="divider-user-management"/>,
           <MenuItem
             key="user-management"
-            onClick={() => {
-              handleClose();
-              navigate('/users');
-            }}
           >
-            <GroupIcon sx={{mr: 1}}/>
-            Управление пользователями
+            <Link to="/users" style={linksStyles}>
+              <GroupIcon sx={{mr: 1}}/>
+              Управление пользователями
+            </Link>
           </MenuItem>
         ]}
         <Divider/>

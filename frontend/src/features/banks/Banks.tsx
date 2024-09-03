@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import {
   Box,
-  Button, ButtonGroup,
+  Button,
+  ButtonGroup,
   CircularProgress,
   Grid,
   Paper,
@@ -10,7 +11,7 @@ import {
   TableCell,
   TableContainer,
   TableHead,
-  TableRow, TextField, Typography
+  TableRow
 } from '@mui/material';
 import { StyledTableCell, StyledTableRow } from '../users/theme';
 import axiosApi from '../../axios';
@@ -18,15 +19,20 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
 import ModalBody from '../../components/ModalBody';
-
-interface Bank {
-  bank: string
-}
+import BankForm from './components/BankForm';
+import { useAppDispatch, useAppSelector } from '../../app/hooks';
+import { selectBanks } from './banksSlice';
+import { Bank } from '../../types';
+import { getBanks } from './banksThunks';
+import { selectLoginLoading } from '../users/usersSlice';
 
 const Banks = () => {
-  const [banks, setBanks] = useState<Bank[] | null>(null);
+  const dispatch = useAppDispatch();
+  const banks = useAppSelector(selectBanks);
+  const loading = useAppSelector(selectLoginLoading);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [changedBank, setChangedBank] = useState<string>('');
+  const [changedBank, setChangedBank] = useState<Bank | null>(null);
+  const [btnDisabled, setBtnDisabled] = useState(false);
 
   const openModal = (bank: Bank) => {
     setChangedBank(bank);
@@ -35,25 +41,43 @@ const Banks = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const {value} = e.target;
-    setChangedBank(value);
+    setChangedBank((prevState) => ({...prevState, bank: value}));
   }
 
-  const changeBankName = ()
+  const changeBankName = async () => {
+    setBtnDisabled(true);
+    const response = await axiosApi.put('/banks', changedBank);
+    if (response.data?.modifiedCount > 0) {
+      setBtnDisabled(false);
+      setIsModalOpen(false);
+      setChangedBank(null);
+      await dispatch(getBanks());
+    }
+  }
+
+  const createBank = async () => {
+    setBtnDisabled(true);
+    const response = await axiosApi.post('/banks', changedBank);
+    if (response.data) {
+      setBtnDisabled(false);
+      setIsModalOpen(false);
+      setChangedBank(null);
+      await dispatch(getBanks());
+    }
+  }
 
   useEffect(() => {
-    const getBanks = async () => {
-      const response = await axiosApi.get('/banks');
-      setBanks(response.data);
-    }
-    getBanks();
-  }, []);
+    dispatch(getBanks());
+  }, [dispatch]);
   return (
     <Box sx={{py: 2}}>
+      {loading && <CircularProgress color="primary"/>}
       <Grid container justifyContent="flex-end" spacing={1}>
         <Grid item>
           <Button
             color="primary"
             variant="contained"
+            onClick={() => setIsModalOpen(true)}
           >
             <AddIcon sx={{mr: 1}}/>
             Добавить банк
@@ -72,7 +96,7 @@ const Banks = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {banks !== null && banks.length > 0 ? banks.map((bank) => (
+                {banks.length > 0 ? banks.map((bank) => (
                   <StyledTableRow>
                     <TableCell align="center">{bank.bank}</TableCell>
                     <TableCell align="right">
@@ -81,7 +105,7 @@ const Banks = () => {
                           size="small"
                           color="error"
                         >
-                          {false && <CircularProgress color="success"/>}
+                          {loading && <CircularProgress color="success"/>}
                           <DeleteIcon/>
                         </Button>
                         <Button size="small" color="success" onClick={() => openModal(bank)}>
@@ -98,20 +122,8 @@ const Banks = () => {
       </Box>
       {isModalOpen &&
           <ModalBody isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}>
-              <Typography component="h2" variant="h4">Редактирование названия банка</Typography>
-              <Box component="form" sx={{mt: 3}}>
-                  <Grid container sx={{flexDirection: 'column'}} spacing={2}>
-                      <Grid item xs={12}>
-                          <TextField required fullWidth value={changedBank} onChange={handleChange}/>
-                      </Grid>
-                      <Grid item>
-                          <Grid container justifyContent="flex-end">
-                              <Button color="error" variant="contained" sx={{mr: 2}}>Отмена</Button>
-                              <Button color="primary" variant="contained" type="submit">Изменить</Button>
-                          </Grid>
-                      </Grid>
-                  </Grid>
-              </Box>
+              <BankForm changedBank={changedBank} handleChange={handleChange} setIsModalOpen={setIsModalOpen}
+                        btnDisabled={btnDisabled} sendData={changedBank?._id ? changeBankName : createBank}/>
           </ModalBody>}
     </Box>
   );

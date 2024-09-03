@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
 import { BanksService } from './banks.service';
 import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
 import { Roles } from '../auth/jwt/jwt.roles.guard';
@@ -25,6 +25,17 @@ export class BanksController {
   async createBank(@Body() bank: BanksDto) {
     try {
       return await this.banksService.createBank(bank);
+    } catch (e) {
+      return e;
+    }
+  }
+
+  @Put()
+  @UseGuards(JwtAuthGuard)
+  @Roles('admin')
+  async changeBank(@Body() newBank: BanksDto) {
+    try {
+      return await this.banksService.changeBank(newBank)
     } catch (e) {
       return e;
     }

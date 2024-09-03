@@ -26,7 +26,7 @@ export class BanksService {
 
   async changeBank(changedBank: BanksDto) {
     try {
-      return await this.bankModal.updateOne({_id: changedBank.id}, changedBank);
+      return await this.bankModal.updateOne({_id: changedBank._id}, changedBank);
     } catch (e) {
       return e;
     }

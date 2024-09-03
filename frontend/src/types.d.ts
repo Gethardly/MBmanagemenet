@@ -69,3 +69,7 @@ export interface Withdraw {
   amount: number;
   phone_number: string;
 }
+export interface Bank {
+  _id?: string;
+  bank: string
+}

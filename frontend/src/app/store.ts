@@ -3,6 +3,7 @@ import { usersReducer } from '../features/users/usersSlice';
 import { persistReducer, persistStore } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import { FLUSH, PAUSE, PERSIST, PURGE, REGISTER, REHYDRATE, } from 'redux-persist/es/constants';
+import { banksReducer } from '../features/banks/banksSlice';
 
 const usersPersistConfig = {
   key: "NOTES:users",
@@ -12,6 +13,7 @@ const usersPersistConfig = {
 
 const rootReducer = combineReducers({
   users: persistReducer(usersPersistConfig, usersReducer),
+  banks: banksReducer,
 });
 
 export const store = configureStore({
