@@ -11,7 +11,7 @@ import {
   TableCell,
   TableContainer,
   TableHead,
-  TableRow
+  TableRow, Typography
 } from '@mui/material';
 import { StyledTableCell, StyledTableRow } from '../users/theme';
 import axiosApi from '../../axios';
@@ -71,8 +71,11 @@ const Banks = () => {
   }, [dispatch]);
   return (
     <Box sx={{py: 2}}>
-      {loading && <CircularProgress color="primary"/>}
-      <Grid container justifyContent="flex-end" spacing={1}>
+      <Grid container justifyContent="space-between" spacing={1}>
+        <Grid item>
+          <Typography variant="h4" component="h3">Список банков</Typography>
+        </Grid>
+        {loading && <CircularProgress color="primary"/>}
         <Grid item>
           <Button
             color="primary"
@@ -97,7 +100,7 @@ const Banks = () => {
               </TableHead>
               <TableBody>
                 {banks.length > 0 ? banks.map((bank) => (
-                  <StyledTableRow>
+                  <StyledTableRow key={bank._id}>
                     <TableCell align="center">{bank.bank}</TableCell>
                     <TableCell align="right">
                       <ButtonGroup variant="contained" aria-label="outlined primary button group">

@@ -88,48 +88,48 @@ const UserMenu: React.FC<Props> = ({user}) => {
         open={Boolean(anchorEl)}
         onClose={handleClose}
       >
-        <MenuItem onClick={openDialog}>
+        <MenuItem key="edit-profile" onClick={openDialog}>
           <AccountBoxIcon sx={{mr: 1}}/>
           Редактировать профиль
         </MenuItem>
-        <Divider/>
-        <MenuItem>
+        <Divider key="payment-history-divider"/>
+        <MenuItem key="payment-history">
           <Link to="/payment-history" style={linksStyles}>
             <HistoryIcon sx={{mr: 1}}/>
             История пополнений
           </Link>
         </MenuItem>
-        <Divider/>
-        <MenuItem>
+        <Divider key="withdraw-history-divider"/>
+        <MenuItem key="withdraw-history">
           <Link to="/withdraw-history" style={linksStyles}>
             <HistoryIcon sx={{mr: 1}}/>
             История выводов
           </Link>
         </MenuItem>
-        <Divider/>
-        <MenuItem>
+        <Divider key="payment-divider"/>
+        <MenuItem key="payment">
           <Link to="/payment" style={linksStyles}>
             <MoveToInboxIcon sx={{mr: 1}}/>
             Пополнение
           </Link>
         </MenuItem>
-        <Divider/>
-        <MenuItem>
+        <Divider key="withdraw-divider"/>
+        <MenuItem key="withdraw">
           <Link to="/withdraw" style={linksStyles}>
             <OutboxIcon sx={{mr: 1}}/>
             Вывод
           </Link>
         </MenuItem>
         {user.role === 'admin' && [
-          <Divider/>,
-          <MenuItem>
+          <Divider key="banks-divider"/>,
+          <MenuItem key="banks">
             <Link to="/banks" style={linksStyles}>
               <AccountBalanceIcon sx={{mr: 1}}/>
               Банки
             </Link>
           </MenuItem>,
-          <Divider/>,
-          <MenuItem>
+          <Divider key="phones-divider"/>,
+          <MenuItem key="phones">
             <Link to="/phones" style={linksStyles}>
               <LocalPhoneIcon sx={{mr: 1}}/>
               Телефоны

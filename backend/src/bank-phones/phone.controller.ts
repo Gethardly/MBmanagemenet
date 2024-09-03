@@ -4,14 +4,14 @@ import { JwtAuthGuard } from '../auth/jwt/jwt-auth.guard';
 import { PhoneDto } from './dto/phoneDto';
 import { Roles, RolesGuard } from '../auth/jwt/jwt.roles.guard';
 
-@Controller('phone')
+@Controller('phones')
 export class PhoneController {
   constructor(
     private  mbankService: PhoneService,
   ) {
   }
   @Get()
-  async getMbankPhone(@Query('bank') bank: string) {
+  async getMbankPhone(@Query('bank') bank: string | undefined) {
     return this.mbankService.getPhones(bank);
   }
 

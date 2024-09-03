@@ -1,13 +1,13 @@
 import { IsNotEmpty, IsString } from 'class-validator';
+import { Schema as MongooseSchema } from 'mongoose';
 
 export class PhoneDto {
-  id: string;
+  _id: string;
 
   @IsNotEmpty()
   @IsString()
   phone: string;
 
   @IsNotEmpty()
-  @IsString()
-  bank: string;
+  bank: MongooseSchema.Types.ObjectId;
 }

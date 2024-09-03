@@ -5,6 +5,7 @@ import { ObjectId } from 'mongodb';
 @Schema()
 export class Banks {
   @Prop({
+    unique: true,
     type: String,
     required: [true, 'Field bank is required'],
   })

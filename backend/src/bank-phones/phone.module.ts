@@ -25,16 +25,4 @@ import { Bank } from '../types';
   controllers: [PhoneController],
   providers: [PhoneService]
 })
-export class PhoneModule implements OnModuleInit {
-  constructor(
-    @InjectModel(Banks.name) private readonly bankModel: Model<Banks>,
-    @InjectModel(Phone.name) private readonly phoneModel: Model<Phone>,
-  ) {}
-
-  async onModuleInit() {
-    const banks = await this.bankModel.find().exec();
-    const bankNames = banks.map((bank) => bank.bank);
-
-    PhoneSchema.path('bank').validate((value) => bankNames.includes(value), 'Invalid bank');
-  }
-}
+export class PhoneModule {}
