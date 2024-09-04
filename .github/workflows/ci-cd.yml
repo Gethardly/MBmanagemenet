@@ -35,7 +35,7 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
           REMOTE_HOST: ${{ secrets.VPS_IP }}
           REMOTE_USER: ${{ secrets.VPS_USER }}
-          TARGET: /root/MBmanagemenet/backend
+          TARGET: /var/www/MBmanagemenet/backend
         with:
           args: 'rsync -avz --delete ./backend/dist/'
 
@@ -45,6 +45,6 @@ jobs:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
           REMOTE_HOST: ${{ secrets.VPS_IP }}
           REMOTE_USER: ${{ secrets.VPS_USER }}
-          TARGET: /root/MBmanagemenet/frontend/build/
+          TARGET: /var/www/MBmanagemenet/frontend/build/
         with:
           args: 'rsync -avz --delete ./frontend/build/'

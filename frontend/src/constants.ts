@@ -16,7 +16,7 @@ export const ROLES: IRole[] = [
   },
 ];
 
-export const SOCKET_SERVER_URL = '/socket/'//'ws://localhost:8000';
+export const SOCKET_SERVER_URL = 'ws://191.101.2.193'//'ws://localhost:8000';
 export const modalStyle = {
   position: 'absolute',
   top: '50%',
