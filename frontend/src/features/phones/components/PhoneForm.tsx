@@ -14,7 +14,6 @@ import {
 } from '@mui/material';
 import { Phone } from '../Phones';
 import { getBanks } from '../../banks/banksThunks';
-import { Bank } from '../../../types';
 
 interface Props {
   changedPhone: Phone | null;
@@ -37,7 +36,6 @@ const PhoneForm: React.FC<Props> = ({
                                     }) => {
   const dispatch = useAppDispatch();
   const banks = useAppSelector(selectBanks);
-  const banksLoading = useAppSelector(selectBanksLoading);
 
   const handleChangeBank = (e: SelectChangeEvent) => {
     setNewBank(e.target.value as string);
