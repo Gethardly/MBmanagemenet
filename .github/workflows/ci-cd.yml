@@ -1,9 +1,9 @@
-name: CI/CD
+name: Deploy Project
 
 on:
   push:
     branches:
-      - develop
+      - develop  # Ветка, на которую будет триггериться деплой
 
 jobs:
   build:
@@ -11,40 +11,42 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v2
         with:
-          node-version: '20.x'
+          node-version: '16'
 
-      - name: Install dependencies
-        run: npm install --legacy-peer-deps
+      - name: Install dependencies for backend
+        working-directory: ./backend
+        run: npm install
 
       - name: Build backend
-        run: npm run build
         working-directory: ./backend
+        run: npm run build
+
+      - name: Install dependencies for frontend
+        working-directory: ./frontend
+        run: npm install
 
       - name: Build frontend
-        run: npm run build
         working-directory: ./frontend
+        run: npm run build
 
-      - name: Deploy backend
+      - name: Deploy to server
         uses: easingthemes/ssh-deploy@v2.1.5
         env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
-          REMOTE_HOST: ${{ secrets.VPS_IP }}
-          REMOTE_USER: ${{ secrets.VPS_USER }}
-          TARGET: /var/www/MBmanagemenet/backend/
-        with:
-          args: 'rsync -avz --delete ./backend/dist/'
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}  # Ваш приватный ключ
+          ARGS: "-avz --delete"
+          SOURCE: "./"
+          REMOTE_HOST: ${{ secrets.REMOTE_HOST }}  # IP или домен вашего сервера
+          REMOTE_USER: ${{ secrets.REMOTE_USER }}  # Пользователь на сервере
+          TARGET: "/var/www/MBmanagement/"  # Путь к вашему проекту на сервере
 
-      - name: Deploy frontend
-        uses: easingthemes/ssh-deploy@v2.1.5
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
-          REMOTE_HOST: ${{ secrets.VPS_IP }}
-          REMOTE_USER: ${{ secrets.VPS_USER }}
-          TARGET: /var/www/MBmanagemenet/frontend/build/
-        with:
-          args: 'rsync -avz --delete ./frontend/build/'
+      - name: Restart PM2 and Nginx
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} << 'EOF'
+            pm2 restart MBmanagement-backend
+            sudo systemctl restart nginx
+          EOF
