@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../../../app/hooks';
-import { selectBanks, selectBanksLoading } from '../../banks/banksSlice';
+import { selectBanks } from '../../banks/banksSlice';
 import {
   Box,
   Button,
