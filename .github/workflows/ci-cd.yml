@@ -45,8 +45,11 @@ jobs:
           TARGET: "/var/www/MBmanagemenet/"  # Путь к вашему проекту на сервере
 
       - name: Restart PM2 and Nginx
-        run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} << 'EOF'
+        uses: easingthemes/ssh-deploy@v2.1.5
+        with:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
+          REMOTE_USER: ${{ secrets.REMOTE_USER }}
+          SCRIPT: |
             pm2 restart back
             sudo systemctl restart nginx
-          EOF
