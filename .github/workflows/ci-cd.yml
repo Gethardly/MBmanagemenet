@@ -42,11 +42,11 @@ jobs:
           SOURCE: "./"
           REMOTE_HOST: ${{ secrets.REMOTE_HOST }}  # IP или домен вашего сервера
           REMOTE_USER: ${{ secrets.REMOTE_USER }}  # Пользователь на сервере
-          TARGET: "/var/www/MBmanagement/"  # Путь к вашему проекту на сервере
+          TARGET: "/var/www/MBmanagemenet/"  # Путь к вашему проекту на сервере
 
       - name: Restart PM2 and Nginx
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} << 'EOF'
-            pm2 restart MBmanagement-backend
+            pm2 restart back
             sudo systemctl restart nginx
           EOF
