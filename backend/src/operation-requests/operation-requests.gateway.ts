@@ -16,7 +16,7 @@ import { WithdrawService } from './services/withdraw.service';
 
 @WebSocketGateway({
   cors: {
-    origin: ['http://localhost:3000', 'http://191.101.2.193/'],
+    origin: ['http://localhost:3000', 'http://191.101.2.193'],
     methods: ['GET', 'POST'],
     credentials: true,
   },

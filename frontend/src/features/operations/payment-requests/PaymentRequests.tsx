@@ -32,6 +32,8 @@ const PaymentRequests = () => {
 
   useEffect(() => {
     socketRef.current = io(SOCKET_SERVER_URL, {
+     /* transports: ['websocket'],
+      withCredentials: true,*/
       extraHeaders: {
         auth: `${token}`,
       },
