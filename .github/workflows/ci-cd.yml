@@ -34,18 +34,12 @@ jobs:
         working-directory: ./frontend
         run: npm run build
 
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
       - name: Deploy to Server
         run: |
-          rsync -avz --delete -e "ssh -i /home/runner/.ssh/deploy_key -o StrictHostKeyChecking=no" \
-          ./ ${{secrets.REMOTE_USER}}@${{secrets.REMOTE_HOST}}:/var/www/MBmanagemenet/
-
-
-      - name: Restart PM2 and Nginx
-        uses: easingthemes/ssh-deploy@v2.1.5
-        with:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
-          REMOTE_USER: ${{ secrets.REMOTE_USER }}
-          SCRIPT: |
-            pm2 restart back
-            sudo systemctl restart nginx
+          rsync -avz --delete -e "ssh -o StrictHostKeyChecking=no" \
+          ./ ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/var/www/MBmanagemenet/
