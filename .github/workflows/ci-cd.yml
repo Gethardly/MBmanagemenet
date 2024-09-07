@@ -34,15 +34,11 @@ jobs:
         working-directory: ./frontend
         run: npm run build
 
-      - name: Deploy to server
-        uses: easingthemes/ssh-deploy@v2.1.5
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}  # Ваш приватный ключ
-          ARGS: "-avz --delete"
-          SOURCE: "./"
-          REMOTE_HOST: ${{ secrets.REMOTE_HOST }}  # IP или домен вашего сервера
-          REMOTE_USER: ${{ secrets.REMOTE_USER }}  # Пользователь на сервере
-          TARGET: "/var/www/MBmanagemenet/"  # Путь к вашему проекту на сервере
+      - name: Deploy to Server
+        run: |
+          rsync -avz --delete -e "ssh -i /home/runner/.ssh/deploy_key -o StrictHostKeyChecking=no" \
+          ./ ${{secrets.REMOTE_USER}}@${{secrets.REMOTE_HOST}}:/var/www/MBmanagemenet/
+
 
       - name: Restart PM2 and Nginx
         uses: easingthemes/ssh-deploy@v2.1.5

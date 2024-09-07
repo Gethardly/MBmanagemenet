@@ -15,7 +15,7 @@ export class PhoneService {
     if (!bank) {
       return this.bankModal.find().populate('bank');
     } else {
-      const phones = await this.bankModal.find({bank}).populate('bank');
+      const phones = await this.bankModal.find().populate('bank').find({});
 
       if (!phones || phones.length === 0) {
         return null;
