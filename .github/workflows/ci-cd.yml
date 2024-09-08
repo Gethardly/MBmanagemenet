@@ -49,5 +49,5 @@ jobs:
             sudo systemctl restart nginx
           
             # Use the full path to pm2 or make sure it's available in the environment
-            /usr/local/bin/pm2 restart back  # Замените 'back' на имя вашего pm2 процесса
+            pm2 restart back  # Замените 'back' на имя вашего pm2 процесса
           EOF
