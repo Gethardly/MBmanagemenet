@@ -39,7 +39,13 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
-      - name: Deploy to Server
+      - name: Deploy and restart services on server
         run: |
-          rsync -avz --delete -e "ssh -o StrictHostKeyChecking=no" \
-          ./ ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/var/www/MBmanagemenet/
+          ssh -o StrictHostKeyChecking=no ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} << 'EOF'
+            # Deploy the application using rsync
+            rsync -avz --delete /local/path/to/deployment ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/var/www/MBmanagemenet/
+          
+            # Restart services on the server
+            sudo systemctl restart nginx
+            pm2 restart back  # Замените 'back' на имя вашего pm2 процесса
+          EOF

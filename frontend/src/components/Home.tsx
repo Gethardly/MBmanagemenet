@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 const Home = () => {
   return (
     <Grid container spacing={1}>
+      Тест деплой
       <Grid item xs={2}>
         <Link to="/payment">
           <Button variant="contained">Пополнение</Button>
