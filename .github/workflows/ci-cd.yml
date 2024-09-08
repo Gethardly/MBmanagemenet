@@ -41,11 +41,13 @@ jobs:
 
       - name: Deploy and restart services on server
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} << 'EOF'
+          ssh -t -o StrictHostKeyChecking=no ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} << 'EOF'
             # Deploy the application using rsync
             rsync -avz --delete /local/path/to/deployment ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:/var/www/MBmanagemenet/
           
             # Restart services on the server
             sudo systemctl restart nginx
-            pm2 restart back  # Замените 'back' на имя вашего pm2 процесса
+          
+            # Use the full path to pm2 or make sure it's available in the environment
+            /usr/local/bin/pm2 restart back  # Замените 'back' на имя вашего pm2 процесса
           EOF
