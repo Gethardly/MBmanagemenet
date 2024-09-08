@@ -15,7 +15,24 @@ export class PhoneService {
     if (!bank) {
       return this.bankModal.find().populate('bank');
     } else {
-      const phones = await this.bankModal.find().populate('bank').find({});
+      const phones = await this.bankModal.aggregate([
+        {
+          $lookup: {
+            from: 'banks',
+            localField: 'bank',
+            foreignField: '_id',
+            as: 'bankData',
+          },
+        },
+        {
+          $unwind: '$bankData',
+        },
+        {
+          $match: {
+            'bankData.bank': bank,
+          },
+        },
+      ]);
 
       if (!phones || phones.length === 0) {
         return null;
