@@ -33,7 +33,7 @@ export class OperationRequestsController {
   @UseInterceptors(
     FileInterceptor('paid_receipt', {
       storage: diskStorage({
-        destination: './public/recharge-receipts',
+        destination: '/var/www/MBmanagemenet/receipts',
         filename: (req, file, callback) => {
           const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
           const ext = extname(file.originalname);
